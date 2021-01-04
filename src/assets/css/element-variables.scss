@@ -1,0 +1,19 @@
+$--font-path: "~element-ui/lib/theme-chalk/fonts";
+
+//$--color-primary: #42c5be;
+$--common-border-radius: 2px;
+$--font-size-base: 14px;
+$--font-size-small: 14px;
+$--small-font-size: 14px;
+$--button-small-border-radius: $--common-border-radius;
+$--input-border-radius: $--common-border-radius;
+$--button-small-font-size: $--small-font-size;
+$--button-small-padding-horizontal: 23px;
+$--button-small-padding-vertical: 6px;
+$--dialog-title-font-size: 16px;
+$--dialog-font-size: $--small-font-size;
+$--select-option-hover-background: #f2f2f2;
+$--table-header-background: #ddf8f6;
+$--border-color-base: #e1e1e1;
+$--transfer-border-color: #e1e1e1;
+@import "~element-ui/packages/theme-chalk/src/index";
