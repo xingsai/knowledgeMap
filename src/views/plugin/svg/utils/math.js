@@ -1,3 +1,4 @@
+//判断范围
 function distanceOfPointToLine(beginX, beginY, endX, endY, ptX, ptY) {
   const k = (endY - beginY || 1) / (endX - beginX || 1);
   const b = beginY - k * beginX;

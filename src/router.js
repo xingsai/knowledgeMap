@@ -12,23 +12,15 @@ import {
 //
 const tokenfail = r => require.ensure([], () => r(require('@/views/error/tokenfail')))
 
-
-
 //测试页面
 const demovideo = (r) =>require.ensure([], () => r(require('@/views/demo/demovideo')))
   //测试页面
 const knowledge = (r) =>require.ensure([], () => r(require('@/views/demo/knowledge')))
   //测试页面
- const knowledgedemo = (r) =>require.ensure([], () => r(require('@/views/demo/knowledgedemo')))
+const knowledgedemo = (r) =>require.ensure([], () => r(require('@/views/demo/knowledgedemo')))
   //测试页面
-  const flowchartDemo = (r) =>require.ensure([], () => r(require('@/views/demo/flowchartDemo')))
+const flowchartDemo = (r) =>require.ensure([], () => r(require('@/views/demo/flowchartDemo')))
  
-
-
-
-
-
-
 Vue.use(Router)
 
 const router = new Router({

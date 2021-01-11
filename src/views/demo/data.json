@@ -1,0 +1,351 @@
+{
+	"agent": {
+		"created_user_id": "2908174897",   
+		"description": "电费电量查询",          
+		"language": "zh-CN", 
+		"industry": "4709e482-dda6-4011-8329-d875e6edd902",  
+		"type": 1,                                          
+		"delete": 0,  
+		"scene": "",
+		"public": 0,
+		"id": "1b2340b9-2dbe-4df4-ae22-bc93a5601b56",
+		"timestamp": 1562208854000,
+		"last_edit_username": "测试",
+		"match_threshold": 0.2,
+		"created": 1562208600000,
+		"last_edit_id": "2908174897",
+		"client_access_token": "64db12d8-02c4-45f4-b948-a0dda8dd6a65",
+		"created_username": "测试",
+		"user_id": "2908174897",
+		"match_mode": 0,
+		"name": "智能客服内网测通版agent(20190620)_agent",
+		"online": 1,
+		"config": "",
+		"updated": 1562208854000,
+		"developer_access_token": "ff40b19c-d10e-4c34-b47a",
+		"intent_model_version": "20170329092259",
+		"status": 0
+	},
+"agentID": "MOCK-AGENT-ID",
+"intent": {
+	"example": [
+        {
+        	"created": "2019-11-22 16:03:23",
+        	"agent_id": "3ac96a83-85ab-40b2-8bee-9b26927ebb06",
+        	"value": "看下周末的天气",
+        	"intent_id": "e9d8aa26-9fa0-452f-ab68-57d0d11d251f",
+        	"md5": null,
+       		"updated": "2019-11-22 16:03:23",
+        	"id": "96f47c88-fb81-41b8-aaaf-e00fe7d0e7b9",
+        	"version": 0
+        }
+	],
+    "sys_intent": [
+        {
+        	"name": "肯定意图"
+        },
+        {
+        	"name": "否定意图"
+        }
+    ],
+	"user_intent": [
+        {
+        	"id":"123",
+        	"agent_id": "1b2340b9-2dbe-4df4-ae22",	
+        	"name_zh": "停电信息查询",
+        	"name": "checktd",
+        	"description": "欠费停电，故障停电"
+        }
+	]
+},
+"entity": [  
+		{	
+			"id":"111",
+			"agent_id": "1b2340b9-2dbe-4df4-ae22-bc93a5601b56",
+			"name":"test",
+			"name_zh": "测试",
+			"entries": [
+					{
+						"id": "222",
+						"agent_id": "1b2340b9-2dbe-4df4-ae22-bc93a5601b56",
+						"entity_id": "111",
+						"name": "test",
+						"name_zh": "测试",
+						"value": "aaa",
+						"synonyms": ["a","aa"],
+						"created": 1562208849000,
+						"updated": 1562208849000
+					}
+				]
+		}
+	],
+"variables": [
+			{
+				"agentId": "3ac96a83-85ab-40b2-8bee-9b26927ebb06",
+				"id": "9b2cd7cc-f4a6-4d36-91fe-eaac375e1eec",
+				"name": "param1",
+				"description": "输入参数1",
+				"status": 0,
+				"created": 1606727415000,
+				"updated": 1606727415000,
+				"version": 1 
+			}
+	],
+"webhook": {
+			"agentId": "3ac96a83-85ab-40b2-8bee-9b26927ebb06",
+			"id": "08080a36-79ab-4040-83e0-1dbe81e39b80",
+			"url": "http://10.90.124.97:18085/ai/v1/webhook",
+			"authUsername": "utry",
+			"authPassword": "utry",
+			"header": [		
+				{		
+					"key": "Content-Type",	
+					"value": "application/json",	
+					"index": 0	
+				}		
+			],	
+			"enabled": false,
+			"created": 1606727341000,
+			"updated": 1606728638000
+	},
+"instruction": [
+				{
+					"agentId": "3ac96a83-85ab-40b2-8bee-9b26927ebb06",
+					"id": "dc2fd7b7-669b-4ea2-aaea-83ac34c4b0cd",
+					"instructionName": "获得天气",
+					"instructionMark": "getWeather",
+					"instructionDescription": "获得天气",
+					"failedAnswer": "查询失败",
+					"created": 1606727379000,
+					"updated": 1606727379000,
+					"inVariables":[		
+						{			
+							"id":"338",		
+							"name":"inParam2" 
+						}			
+					],				
+					"outVariables":[		
+						{			
+							"id":"d43",		
+							"name":"outParam2"	
+						}			
+					]				
+				}
+		],		
+"channel": [			
+		{			
+			"id":"",	
+			"agentId":"",
+			"name": "北京",	
+			"status": 0	
+		}			
+	],
+ "chitchat": [						
+		{		
+            "id":"",
+            "agentId":"",
+			"standard": "端午节快乐",					
+			"extends": [			
+				"粽子节"					
+			],						
+			"answer": [						
+				{					
+					"type": 1,			
+					"text": "节日好，请问有什么可以帮您？"
+				}					
+			]						
+		}							
+     ],
+ "dirList": [							
+		{					
+			"name": "目录一",		
+			"id":"0306237a-ccde-45f6-b97a-337f79e54cec"
+		}					
+	],						
+"faq": [									
+	{									
+		"extend_questions": [		
+			"电力网是什么"							
+		],								
+		"channel_answers": [	
+			{							
+				"answer": {						
+					"text": "电力网定义：\n是各种电压等级的...。",		
+					"type": 1	
+				},
+
+                "list": [							
+                    {						
+                        "text": "步骤六：\n使用标准结束语结束通话。\n通话结束后...。",
+                        "type": 1					
+                    },						
+                    {						
+                        "type": 4,					
+                        "url": "http://10.90.90.24:10080/flow/004.jpg"			
+                    }						
+                ],							
+ 			
+				"channel": "江苏", 
+				"type": 1						
+			}							
+		],								
+		"question": "电力网定义",	
+		"answer": {					
+			"channel_name": "通用",					
+			"text": "通用答案",				
+			"type": 1,			  
+			"channel_id": ""							
+		},								
+		"effect": "2000-01-01 00:00:00", 	
+		"expire": "2099-12-31 23:59:59",				
+		"templates": [],					
+		"isActiveHook": 0,				  		
+		"instruction": "",						
+		"id":"",						
+		"dir_id": 0,							
+		"type": 1						
+	}								
+],     
+"dialogProcess": [ 
+	{
+		"id":"111",
+		"agentId":"",
+		"name": "查天气",
+		"describes": "" 
+	}
+],	
+"dialogNodes": [  
+        {
+            "id": "ues6y",  
+            "processId":"", 
+            "name": "查天气",
+            "description": "",
+            "type": "root",  
+            "x": 82,
+            "y": 233, 
+            "wires": [ 
+                "pxzts"
+            ],
+            "scene_name": "",
+            "view_name": "",
+            "other_info": {
+                "chineseName": "",
+                "intent": "查天气",  
+                "entitiesForExtend": []  
+            }
+        },
+        {
+            "id": "xj89u",
+            "processId":"",
+            "name": "输入城市名称",
+            "description": "",
+            "type": "operation",
+            "x": 228,
+            "y": 168,
+            "wires": [
+                "pxzts"
+            ],
+            "scene_name": "",
+            "view_name": "",
+            "other_info": {
+                "chineseName": "",
+                "actionType": "REQUEST_INPUT",  
+                "reply": "请输入城市", 
+                "entityName": "城市",  
+                "variables":[	
+                    {		
+                        "id":"",	
+                        "name":"",	
+                        "value":"",
+                        "operator":"操作：String(字符串匹配),Number（数字匹配）,Entity（实体匹配）,null"	  
+                    }		
+                ]			
+            }
+        },
+        {
+            "id": "c4usb",
+            "processId":"",
+            "name": "判断城市名称",
+            "description": "判断是否是天津",
+            "type": "switch",
+            "x": 372,
+            "y": 234,
+            "wires": [
+                "6cyug",
+                "t2bnd"
+            ],
+            "scene_name": "",
+            "view_name": "",
+            "other_info": {
+                "chineseName": "",
+                "cases": [
+                    {
+                        "rules": [
+                             {
+                                "targetType": "entity", 
+                                "entityName": "city",  
+                                "httpResponseProperty": "",  
+                                "customizedKey": "",
+                                "operator": "isNull",  
+                            "value": ""  
+                        },
+                        {
+                                "targetType": "entity",
+                                "entityName": "城市",
+                                "httpResponseProperty": "",
+                                "customizedKey": "",
+                                "operator": "equal",
+                                "value": "天津"
+                            }
+                        ],
+                        "relation": "and"  
+                    },
+                    {
+                        "rules": [
+                            {
+                                "operator": "else"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ozep5",
+            "processId":"",
+            "name": "天津气温",
+            "description": "",
+            "type": "operation",
+            "x": 638,
+            "y": 193,
+            "wires": [
+                ""
+            ],
+            "scene_name": "",
+            "view_name": "",
+            "other_info": {
+                "chineseName": "",
+                "actionType": "END_SESSION",
+                "reply": "天津气温10度",
+                "variables":[]
+            }
+        },
+        {
+            "id": "6cyug",
+            "processId":"",
+            "name": "查询地点天气",
+            "description": "查询城市天气",
+            "type": "http",
+            "x": 489,
+            "y": 138,
+            "wires": [
+                "ozep5"
+            ],
+            "scene_name": "",
+            "view_name": "",
+            "other_info": {
+                "action": "getWeather" 
+            }
+        }
+	]
+}

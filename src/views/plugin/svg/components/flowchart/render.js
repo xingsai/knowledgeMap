@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import {roundTo20} from '../../utils/math';
 let colorArr={
-  start:{'fill':'#FFF9F2','stroke':"#FDC188"},
-  judge:{'fill':'#F9F7FC','stroke':"#8E63C4"},
+  root:{'fill':'#FFF9F2','stroke':"#FDC188"},
+  switch:{'fill':'#F9F7FC','stroke':"#8E63C4"},
   operation:{'fill':'#F3F9FE','stroke':"#1F8EEB"},
   http:{'fill':'#EEF8E9','stroke':"#37CA37"},
 }
@@ -12,7 +12,7 @@ function render(g, node, isSelected) {
   node.width = node.width || 120;
   node.height = 40+node.list*10 || 60;
   let borderColor = isSelected ? '#666666' : '#bbbbbb';
-  // if (node.type !== 'start' && node.type !== 'end') {
+  // if (node.type !== 'root' && node.type !== 'end') {
   //   // title
   //   g.append('rect').
   //       attr('x', node.x).
@@ -47,11 +47,11 @@ function render(g, node, isSelected) {
     
       body. style('fill',isSelected ? '#D99C7E' : colorArr[node.type].fill).
       style('stroke', isSelected ? 'red' : colorArr[node.type].stroke);
-      // if(node.type == 'start'){
+      // if(node.type == 'root'){
       //   body. style('fill', colorArr[node.type].fill).
       //   style('stroke', colorArr[node.type].stroke);
 
-      // }else if(node.type == 'judge'){
+      // }else if(node.type == 'switch'){
        
 
       // } else if(node.type == 'operation'){
@@ -64,7 +64,7 @@ function render(g, node, isSelected) {
       //   style('stroke', colorArr[node.type].stroke);
         
       // }
-  // if (node.type !== 'start' && node.type !== 'end') {
+  // if (node.type !== 'root' && node.type !== 'end') {
   //   body.attr('x', node.x).attr('y', node.y + 20);
   //   body.style('height', roundTo20(node.height - 20) + 'px');
   // } else {
@@ -93,20 +93,21 @@ for (let i=0;i<connectorPosition.length;i++ ) {
 }
 
   // body text
-  let text = node.type === 'start'
-      ? 'Start'
-      : (node.type === 'end' ? 'End' : (
-              (!node.approvers || node.approvers.length === 0)
-                  ? 'No approver'
-                  : (
-                      node.approvers.length > 1
-                          ? `${node.approvers[0].name + '...'}`
-                          : node.approvers[0].name
-                  )
-          )
-      );
+  // let text = node.type === 'root'
+  //     ? 'root'
+  //     : (node.type === 'end' ? 'End' : (
+  //             (!node.approvers || node.approvers.length === 0)
+  //                 ? 'No approver'
+  //                 : (
+  //                     node.approvers.length > 1
+  //                         ? `${node.approvers[0].name + '...'}`
+  //                         : node.approvers[0].name
+  //                 )
+  //         )
+  //     );
+  let text=node.name
   let bodyTextY;
-  // if (node.type !== 'start' && node.type !== 'end') {
+  // if (node.type !== 'root' && node.type !== 'end') {
   //   bodyTextY = node.y + 25 + roundTo20(node.height - 20) / 2;
   // } else {
   //   bodyTextY = node.y + 5 + roundTo20(node.height) / 2;
@@ -128,14 +129,14 @@ for (let i=0;i<connectorPosition.length;i++ ) {
     }
   });
 }
-    //获取位置信息 上下左右 1,start 只有右边的点，2,operation http 左右各一个，3.judge 左侧一个，右侧可以多个
+    //获取位置信息 上下左右 1,root 只有右边的点，2,operation http 左右各一个，3.switch 左侧一个，右侧可以多个
     function getConnectorPosition(node) {
       let halfWidth = node.width / 2;
       let halfHeight = node.height / 2;
       let left = { x: node.x, y: node.y + halfHeight };
       let right;
       let arr=[]
-      if(node.type=="judge"){
+      if(node.type=="switch"){
         if(node.list&&node.list>1){
           for(let i=0;i<node.list;i++){
             let halfHeight = node.height / (node.list+1);
@@ -149,9 +150,9 @@ for (let i=0;i<connectorPosition.length;i++ ) {
       }else{
          right = { x: node.x + node.width, y: node.y + halfHeight };
       }
-      if(node.type=="start"){
+      if(node.type=="root"){
         return [right]  ;
-      }else if(node.type=="judge"){
+      }else if(node.type=="switch"){
         return [left ].concat(arr) ;
       }else {
         return [left, right ] ;

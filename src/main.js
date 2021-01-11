@@ -30,24 +30,25 @@ Vue.component("comlist", comlist);
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 Vue.prototype.$progress = NProgress;
-import * as d3 from 'd3'
-Vue.prototype.$d3 = d3
+// import * as d3 from 'd3'
+// Vue.prototype.$d3 = d3
 // import FlowChart from 'flowchart-vue';
 // Vue.use(FlowChart);
 
 // elementui component
 import ElementUI from "element-ui";
-//import "./assets/css/heyui.css";
-//import heyui from 'heyui';
-//import "./assets/css/element-variables.scss";
-import "./assets/css/font.less";
+// import "./assets/css/heyui.css";
+// //import heyui from 'heyui';
+// import "./assets/css/element-variables.scss";
+// import "./assets/css/font.less";
+import 'element-ui/lib/theme-chalk/index.css';
 //Vue.use(heyui);
 Vue.use(ElementUI, { size: "small" });
 //Vue.use(ElementUI);
 
 // custom css
 import "./assets/css/reset.css";
-//import "./assets/css/them.css";
+import "./assets/css/them.css";
 import "./assets/css/common.css";
 
 // personal global components

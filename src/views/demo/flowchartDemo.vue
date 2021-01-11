@@ -2,27 +2,49 @@
   <div class="container">
     <div class="flex-wrap btn-wrap">
       <div class="flex-wrap">
-      基础节点：
+        基础节点：
+        <div class="flex-wrap">
+          <div
+            class="btn-style orange-btn"
+            @click="addNode('1')"
+            draggable="true"
+            @dragstart="drag($event, '1')"
+          >
+            根节点
+          </div>
+          <div
+            class="btn-style purple-btn"
+            @click="addNode('2')"
+            draggable="true"
+            @dragstart="drag($event, '2')"
+          >
+            判断节点
+          </div>
+          <div
+            class="btn-style blue-btn"
+            @click="addNode('3')"
+            draggable="true"
+            @dragstart="drag($event, '3')"
+          >
+            动作节点
+          </div>
+        </div>
+      </div>
       <div class="flex-wrap">
-        <div class="btn-style orange-btn" @click="addNode('1')" draggable="true" @dragstart="drag($event,'1')">
-          根节点
+        功能节点：
+        <div>
+          <div
+            class="btn-style green-btn"
+            @click="addNode('4')"
+            draggable="true"
+            @dragstart="drag($event, '4')"
+          >
+            http节点
+          </div>
+          <!-- <div class="btn-style">KG节点</div> -->
         </div>
-        <div class="btn-style purple-btn" @click="addNode('2')" draggable="true" @dragstart="drag($event,'2')">判断节点</div>
-        <div class="btn-style blue-btn" @click="addNode('3')" draggable="true" @dragstart="drag($event,'3')">动作节点</div>
       </div>
     </div>
-       <div class="flex-wrap">
-      功能节点：
-      <div>
-        <div class="btn-style green-btn" @click="addNode('4')" draggable="true" @dragstart="drag($event,'4')">
-          http节点
-        </div>
-        <!-- <div class="btn-style">KG节点</div> -->
-      </div>
-    </div>
-
-    </div>
-    
 
     <div id="toolbar">
       <!-- <button
@@ -59,7 +81,7 @@
       </button> -->
       <button @click="$refs.chart.save()">保存</button>
     </div>
-      <!-- :render="render" -->
+    <!-- :render="render" -->
     <flowchart
       :nodes="nodes"
       :connections="connections"
@@ -72,13 +94,32 @@
       @save="handleChartSave"
       :dragNode="dragNode"
       ref="chart"
-    
     >
     </flowchart>
-    <node-dialog
+    <!-- <node-dialog
       :visible.sync="nodeDialogVisible"
-      :node.sync="nodeForm.target"
-    ></node-dialog>
+      :node.sync="nodeForm"
+      @hideDialog="hideDialog"
+    ></node-dialog> -->
+    <el-dialog
+      :title="edittitle"
+      :visible.sync="nodeDialogVisible"
+      width="80%"
+      :close-on-click-modal="false"
+    >
+      <div>
+        <component
+          :is="componentId"
+          ref="form"
+          :node="nodeForm"
+          @sendFormInfo="sendFormInfo"
+        ></component>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleClickCancelSaveNode">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+      </span>
+    </el-dialog>
     <connection-dialog
       :visible.sync="connectionDialogVisible"
       :connection.sync="connectionForm.target"
@@ -104,189 +145,430 @@ export default {
   },
   data: function () {
     return {
-      dragNode:{},
+      edittitle: "",
+      componentId: "",
+      dragNode: {},
       nodes: [
-        { id: 1, x: 50, y: 220, name: "Start", type: "start" },
-        { id: 2, x: 630, y: 220, name: "End", type: "http" },
-         { id: 2, x: 60, y: 420, name: "End", type: "judge" },
-        {
-          id: 3,
-          x: 340,
-          y: 130,
-          name: "Custom size",
-          type: "judge",
-          list:3,
-          approvers: [{ id: 1, name: "Joyce" }],
-          width: 120,
-          height: 40,
-        },
-        {
-          id: 4,
-          x: 240,
-          y: 220,
-          name: "Operation",
-          type: "judge",
-           list:9,
-          approvers: [{ id: 2, name: "Allen" }],
-        },
-        {
-          id: 5,
-          x: 440,
-          y: 220,
-          name: "Operation",
-          type: "operation",
-          approvers: [{ id: 3, name: "Teresa" }],
-        },
+        // { id: 1, x: 50, y: 220, name: "root", type: "root" },
+        // { id: 2, x: 630, y: 220, name: "End", type: "http" },
+        // { id: 2, x: 60, y: 420, name: "End", type: "switch" },
+        // {
+        //   id: 3,
+        //   x: 340,
+        //   y: 130,
+        //   name: "Custom size",
+        //   type: "switch",
+        //   list: 3,
+        //   approvers: [{ id: 1, name: "Joyce" }],
+        // },
+        // {
+        //   id: 4,
+        //   x: 240,
+        //   y: 220,
+        //   name: "Operation",
+        //   type: "switch",
+        //   list: 9,
+        //   approvers: [{ id: 2, name: "Allen" }],
+        // },
+        // {
+        //   id: 5,
+        //   x: 440,
+        //   y: 220,
+        //   name: "Operation",
+        //   type: "operation",
+        //   approvers: [{ id: 3, name: "Teresa" }],
+        // },
       ],
       connections: [
-        {
-          source: { id: 1, position: "right" },
-          destination: { id: 4, position: "left" },
-          id: 1,
-          type: "pass",
-        },
-        {
-          source: { id: 4, position: "right" },
-          destination: { id: 5, position: "left" },
-          id: 2,
-          type: "pass",
-        },
-        {
-          source: { id: 5, position: "right" },
-          destination: { id: 2, position: "left" },
-          id: 3,
-          type: "pass",
-        },
-        {
-          source: { id: 5, position: "right" },
-          destination: { id: 4, position: "left" },
-          id: 4,
-          type: "reject",
-        },
-        {
-          source: { id: 1, position: "right" },
-          destination: { id: 3, position: "left" },
-          id: 5,
-          type: "pass",
-        },
-        {
-          source: { id: 3, position: "right" },
-          destination: { id: 2, position: "left" },
-          id: 6,
-          type: "pass",
-        },
+        // {
+        //   source: { id: 1, position: "right" },
+        //   destination: { id: 4, position: "left" },
+        //   id: 1,
+        //   type: "pass",
+        // },
+        // {
+        //   source: { id: 4, position: "right" },
+        //   destination: { id: 5, position: "left" },
+        //   id: 1,
+        //   type: "pass",
+        // },
+        // {
+        //   source: { id: 5, position: "right" },
+        //   destination: { id: 2, position: "left" },
+        //   id: 1,
+        //   type: "pass",
+        // },
+        // {
+        //   source: { id: 5, position: "right" },
+        //   destination: { id: 4, position: "left" },
+        //   id: 4,
+        //   type: "reject",
+        // },
+        // {
+        //   source: { id: 1, position: "right" },
+        //   destination: { id: 3, position: "left" },
+        //   id: 5,
+        //   type: "pass",
+        // },
+        // {
+        //   source: { id: 3, position: "right" },
+        //   destination: { id: 2, position: "left" },
+        //   id: 6,
+        //   type: "pass",
+        // },
       ],
-      nodeForm: { target: null },
+      nodeForm: {},
       connectionForm: { target: null, operation: null },
       nodeDialogVisible: false,
       connectionDialogVisible: false,
     };
   },
-  async mounted() {},
+  async mounted() {
+    this.nodes = sessionStorage.getItem("nodes")
+      ? JSON.parse(sessionStorage.getItem("nodes"))
+      : [
+          {
+            id: "ues6y",
+            processId: "",
+            name: "查天气111",
+            description: "1111111",
+            type: "root",
+            x: 82,
+            y: 233,
+            wires: ["xj89u"],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              intent: "查天气",
+              entitiesForExtend: [],
+            },
+          },
+          {
+            id: "xj89u",
+            processId: "",
+            name: "输入城市名称",
+            description: "11111",
+            type: "operation",
+            x: 228,
+            y: 168,
+            wires: ["c4usb"],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              actionType: "",
+              reply: "请输入1城市",
+              entityName: "城市",
+              variables: [
+                {
+                  id: "",
+                  name: "测试1",
+                  value: "测试1",
+                  operator: "String",
+                },
+                {
+                  id: "",
+                  name: "测试2",
+                  value: "测试2",
+                  operator: "Expression",
+                },
+              ],
+            },
+          },
+          {
+            id: "c4usb",
+            processId: "",
+            name: "判断城市名称",
+            description: "判断是否是天津",
+            type: "switch",
+            x: 372,
+            y: 234,
+            wires: ["6cyug"],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              cases: [
+                {
+                  type: "normal",
+                  rules: [
+                    {
+                      targetType: "entity",
+                      entityName: "city",
+                      httpResponseProperty: "",
+                      customizedKey: "",
+                      operator: "isNull",
+                      value: "tianjin",
+                    },
+                    {
+                      targetType: "entity",
+                      entityName: "城市",
+                      httpResponseProperty: "",
+                      customizedKey: "",
+                      operator: "equal",
+                      value: "天津",
+                    },
+                  ],
+                  relation: "and",
+                },
+                {
+                  type: "expression",
+                  rules: [
+                    {
+                      targetType: "entity",
+                      entityName: "city",
+                      httpResponseProperty: "",
+                      customizedKey: "",
+                      operator: "isNull",
+                      value: "tianjin",
+                    },
+                    {
+                      targetType: "entity",
+                      entityName: "城市",
+                      httpResponseProperty: "",
+                      customizedKey: "",
+                      operator: "equal",
+                      value: "天津",
+                    },
+                  ],
+                  relation: "and",
+                },
+                {
+                  type: "normal",
+                  rules: [
+                    {
+                      operator: "else",
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            id: "ozep5",
+            processId: "",
+            name: "天津气温",
+            description: "",
+            type: "operation",
+            x: 638,
+            y: 193,
+            wires: ["6cyug"],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              actionType: "END_SESSION",
+              reply: "天津气温10度",
+              variables: [],
+            },
+          },
+          {
+            id: "6cyug",
+            processId: "",
+            name: "查询地点天气",
+            description: "查询城市天气",
+            type: "http",
+            x: 489,
+            y: 138,
+            wires: ["ozep5"],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              action: "",
+            },
+          },
+        ];
+    this.setInfoToCanuse();
+  },
   methods: {
-    drag(ev,num){
-            //num  1 根节点2，判断节点3，动作节点4.http节点
-       switch(num){
-             case "1":
-                  this.dragNode={
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'start',
-                    approvers: [],
-                  }
-                break;
-             case "2":
-                 this.dragNode={
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'judge',
-                    approvers: [],
-                  }
-               
-                 break;
-             case "3":
-                this.dragNode={
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'operation',
-                    approvers: [],
-                  }
-                             break;
-             case"4":
-               this.dragNode={
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'http',
-                    approvers: [],
-                  }
-                 break;
+    setInfoToCanuse() {
+      this.connections = [];
+      this.nodes.forEach((item) => {
+        item = Object.assign({ width: 120, height: 60 }, item);
 
-             default:
-                 console.log("您的输入有误");
-                 break;
-         } 
-     
+        //this.nodes.push(item);
 
+        if (item.wires && item.wires.length > 0) {
+          item.wires.forEach((it) => {
+            this.connections.push({
+              source: { id: item.id, position: "right" },
+              destination: { id: it, position: "left" },
+              type: "pass",
+            });
+          });
+        }
+        console.log(this.connections);
+      });
     },
-    addNode(num){
+    setTitle() {
+      if (this.nodeForm.type == "root") {
+        this.edittitle = "编辑根节点";
+      } else if (this.nodeForm.type == "operation") {
+        this.edittitle = "编辑动作节点";
+      } else if (this.nodeForm.type == "switch") {
+        this.edittitle = "编辑判断节点";
+      } else if (this.nodeForm.type == "http") {
+        this.edittitle = "编辑http节点";
+      } else {
+        this.edittitle = "编辑";
+      }
+      this.componentId = require(`@/views/plugin/svg/components/dialogContent/${this.nodeForm.type}Detail.vue`).default;
+    },
+    hideDialog(data) {
+      this.nodeDialogVisible = data;
+    },
+    //拖动添加元素
+    drag(ev, num) {
       //num  1 根节点2，判断节点3，动作节点4.http节点
-       switch(num){
-             case "1":
-                  this.$refs.chart.add({
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'start',
-                    approvers: [],
-                  })
-                break;
-             case "2":
-                this.$refs.chart.add({
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'judge',
-                    approvers: [],
-                  })
-               
-                 break;
-             case "3":
-                this.$refs.chart.add({
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'operation',
-                    approvers: [],
-                  })
-                             break;
-             case"4":
-              this.$refs.chart.add({
-                    id: +new Date(),
-                    x: 10,
-                    y: 10,
-                    name: 'New',
-                    type: 'http',
-                    approvers: [],
-                  })
-                 
-                 break;
+      switch (num) {
+        case "1":
+          this.dragNode = {
+            id: +new Date(),
+            x: 10,
+            y: 10,
+            processId: "",
+            name: "根节点",
+            description: "",
+            type: "root",
+            wires: [],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              intent: "",
+              entitiesForExtend: [],
+            },
+          };
+          break;
+        case "2":
+          this.dragNode = {
+            id: +new Date(),
+            x: 10,
+            y: 10,
+            name: "判断节点",
+            type: "switch",
+            processId: "",
+            description: "",
+            wires: [],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              cases: [
+                {
+                  type: "normal",
+                  rules: [],
+                  relation: "and",
+                },
+                {
+                  type: "normal",
+                  rules: [
+                    {
+                      operator: "else",
+                    },
+                  ],
+                },
+              ],
+            },
+          };
 
-             default:
-                 console.log("您的输入有误");
-                 break;
-         } 
+          break;
+        case "3":
+          this.dragNode = {
+            id: +new Date(),
+            x: 10,
+            y: 10,
+            name: "动作节点",
+            type: "operation",
+            processId: "",
+            description: "",
+            wires: [],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              chineseName: "",
+              actionType: "",
+              reply: "",
+              entityName: "",
+              variables: [],
+            },
+          };
+          break;
+        case "4":
+          this.dragNode = {
+            id: +new Date(),
+            x: 10,
+            y: 10,
+            name: "http节点",
+            type: "http",
+            approvers: [],
+            processId: "",
+            description: "",
+            wires: [],
+            scene_name: "",
+            view_name: "",
+            other_info: {
+              action: "",
+            },
+          };
+          break;
 
+        default:
+          console.log("您的输入有误");
+          break;
+      }
+    },
+    addNode(num) {
+      //num  1 根节点2，判断节点3，动作节点4.http节点
+      // switch (num) {
+      //   case "1":
+      //     this.$refs.chart.add({
+      //       id: +new Date(),
+      //       x: 10,
+      //       y: 10,
+      //       name: "New",
+      //       type: "root",
+      //       approvers: [],
+      //     });
+      //     break;
+      //   case "2":
+      //     this.$refs.chart.add({
+      //       id: +new Date(),
+      //       x: 10,
+      //       y: 10,
+      //       name: "New",
+      //       type: "switch",
+      //       approvers: [],
+      //     });
+
+      //     break;
+      //   case "3":
+      //     this.$refs.chart.add({
+      //       id: +new Date(),
+      //       x: 10,
+      //       y: 10,
+      //       name: "New",
+      //       type: "operation",
+      //       approvers: [],
+      //     });
+      //     break;
+      //   case "4":
+      //     this.$refs.chart.add({
+      //       id: +new Date(),
+      //       x: 10,
+      //       y: 10,
+      //       name: "New",
+      //       type: "http",
+      //       approvers: [],
+      //     });
+
+      //     break;
+
+      //   default:
+      //     console.log("您的输入有误");
+      //     break;
+      // }
     },
     handleDblClick(position) {
       this.$refs.chart.add({
@@ -299,18 +581,69 @@ export default {
       });
     },
     async handleChartSave(nodes, connections) {
-        console.log(nodes)
-        console.log(connections)
+      nodes.forEach((item)=>{
+        item.wires=[];
+      })
+      if (connections && connections.length > 0) {
+        connections.forEach((item) => {
+          if (item.source.position == "right") {
+            let index = nodes.findIndex((it) => {
+              return it.id == item.source.id;
+            });
+            nodes[index].wires.push(item.destination.id)
+          } else {
+             let index = nodes.findIndex((it) => {
+              return it.id == item.destination.id;
+            });
+            nodes[index].wires.push(item.source.id)
+          }
+        });
+      }
+      sessionStorage.setItem("nodes", JSON.stringify(nodes));
+      console.log(nodes);
+      console.log(connections);
       // axios.post(url, {nodes, connection}).then(resp => {
       //   this.nodes = resp.nodes;
       //   this.connections = resp.connections;
       //   // Flowchart will refresh after this.nodes and this.connections changed
       // });
     },
-    handleEditNode(node) {
-      this.nodeForm.target = node;
-      this.nodeDialogVisible = true;
+    sendFormInfo(data) {
+      if (data == "") {
+      } else {
+        let index = this.nodes.findIndex((item) => {
+          return item.id == data.id;
+        });
+
+        console.log(index);
+        console.log(data);
+        this.nodes[index] = Object.assign({}, data);
+        this.setInfoToCanuse();
+        sessionStorage.setItem("nodes", JSON.stringify(this.nodes));
+
+        this.nodeDialogVisible = false;
+      }
     },
+    handleClickCancelSaveNode() {
+      this.nodeDialogVisible = false;
+      //this.$emit("update:visible", false);
+    },
+    submitForm() {
+      let flag = this.$refs.form.submitForm();
+      console.log(flag);
+      // if(flag){
+      //   this.nodeDialogVisible=false
+
+      // }
+    },
+    //编辑node
+    handleEditNode(node) {
+      console.log(node);
+      this.nodeForm = node;
+      this.nodeDialogVisible = true;
+      this.setTitle();
+    },
+    //编辑连线
     handleEditConnection(connection) {
       this.connectionForm.target = connection;
       this.connectionDialogVisible = true;
@@ -319,7 +652,7 @@ export default {
     //   node.width = node.width || 120;
     //   node.height = node.height || 60;
     //   let borderColor = isSelected ? "#666666" : "#bbbbbb";
-    //   if (node.type !== "start" && node.type !== "end") {
+    //   if (node.type !== "root" && node.type !== "end") {
     //     // title
     //     if (node.id !== 3) {
     //       g.append("rect")
@@ -365,7 +698,7 @@ export default {
     //       .style("width", node.width + "px")
     //       .style("fill", "white")
     //       .style("stroke-width", "1px");
-    //     if (node.type !== "start" && node.type !== "end") {
+    //     if (node.type !== "root" && node.type !== "end") {
     //       body.attr("x", node.x).attr("y", node.y + 20);
     //       body.style("height", roundTo20(node.height - 20) + "px");
     //     } else {
@@ -381,8 +714,8 @@ export default {
 
     //   // body text
     //   let text =
-    //     node.type === "start"
-    //       ? "Start"
+    //     node.type === "root"
+    //       ? "root"
     //       : node.type === "end"
     //       ? "End"
     //       : !node.approvers || node.approvers.length === 0
@@ -391,7 +724,7 @@ export default {
     //       ? `${node.approvers[0].name + "..."}`
     //       : node.approvers[0].name;
     //   let bodyTextY;
-    //   if (node.type !== "start" && node.type !== "end") {
+    //   if (node.type !== "root" && node.type !== "end") {
     //     if (node.id === 3) {
     //       bodyTextY = node.y + 25;
     //     } else {
@@ -442,99 +775,95 @@ export default {
 
 .container {
   margin: auto;
-  height:100%;
-  width:90%;
+  height: 100%;
+  width: 90%;
 }
-.btn-wrap{
-  padding:10px;
+.btn-wrap {
+  padding: 10px;
 }
-.flex-wrap{
+.flex-wrap {
   display: flex;
 }
 
-.btn-style{
-  height:40px;
-  width:100px;
+.btn-style {
+  height: 40px;
+  width: 100px;
   border-radius: 20px;
-  border:1px solid #e3e3e3;
+  border: 1px solid #e3e3e3;
   text-align: center;
   line-height: 40px;
   position: relative;
-  margin-right:15px;
+  margin-right: 15px;
 }
-.btn-style:before{
+.btn-style:before {
   content: "";
   display: block;
   position: absolute;
-  top:50%;
-  right:0;
-  width:10px;
+  top: 50%;
+  right: 0;
+  width: 10px;
   height: 10px;
-  background-color:#FDC188;
+  background-color: #fdc188;
   border-radius: 5px;
-  margin-right:-5px;
-  margin-top:-5px;
-  
+  margin-right: -5px;
+  margin-top: -5px;
 }
-.btn-style:after{
+.btn-style:after {
   content: "";
   display: block;
   position: absolute;
-  top:50%;
-  left:0;
-  width:10px;
+  top: 50%;
+  left: 0;
+  width: 10px;
   height: 10px;
-  background-color:#FDC188;
+  background-color: #fdc188;
   border-radius: 5px;
-  margin-left:-5px;
-  margin-top:-5px;
-  
+  margin-left: -5px;
+  margin-top: -5px;
 }
-.orange-btn{
-  border-color: #FDC188;
-  color: #FDC188;
-  background-color:#FFF9F2;
+.orange-btn {
+  border-color: #fdc188;
+  color: #fdc188;
+  background-color: #fff9f2;
 }
-.orange-btn:before{
-   background-color:#FDC188;
+.orange-btn:before {
+  background-color: #fdc188;
 }
-.orange-btn:after{
+.orange-btn:after {
   display: none;
 }
 
-.purple-btn{
-   border-color: #8E63C4;
-   color: #8E63C4;
-  background-color:#F9F7FC;
+.purple-btn {
+  border-color: #8e63c4;
+  color: #8e63c4;
+  background-color: #f9f7fc;
 }
-.purple-btn:before{
-   background-color:#8E63C4;
+.purple-btn:before {
+  background-color: #8e63c4;
 }
-.purple-btn:after{
-   background-color:#8E63C4;
+.purple-btn:after {
+  background-color: #8e63c4;
 }
-.blue-btn{
-   border-color: #1F8EEB;
-   color: #1F8EEB;
-  background-color:#F3F9FE;
+.blue-btn {
+  border-color: #1f8eeb;
+  color: #1f8eeb;
+  background-color: #f3f9fe;
 }
-.blue-btn:before{
-   background-color:#1F8EEB;
+.blue-btn:before {
+  background-color: #1f8eeb;
 }
-.blue-btn:after{
-   background-color:#1F8EEB;
+.blue-btn:after {
+  background-color: #1f8eeb;
 }
-.green-btn{
-  border-color: #37CA37;
-  color: #37CA37;
-  background-color:#EEF8E9;
+.green-btn {
+  border-color: #37ca37;
+  color: #37ca37;
+  background-color: #eef8e9;
 }
-.green-btn:before{
-   background-color:#37CA37;
+.green-btn:before {
+  background-color: #37ca37;
 }
-.green-btn:after{
-   background-color:#37CA37;
+.green-btn:after {
+  background-color: #37ca37;
 }
-
-
 </style>

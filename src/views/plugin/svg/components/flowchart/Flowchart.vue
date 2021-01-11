@@ -14,9 +14,8 @@
     @mousedown="handleChartMouseDown($event)"
     @dragover="allowDrag($event)"
     @drop="drop($event)"
-    
   >
-    <span id="position" class="unselectable"> 
+    <span id="position" class="unselectable">
       {{ cursorToChartOffset.x + ", " + cursorToChartOffset.y }}
     </span>
     <svg id="svg">
@@ -39,30 +38,19 @@ import render from "./render";
 export default {
   name: "flowchart",
   props: {
-
     //所有的node 节点
     nodes: {
       type: Array,
-      default: () => [
-        // { id: 1, x: 140, y: 270, name: "Start", type: "start" },
-        // { id: 2, x: 540, y: 270, name: "End", type: "end" },
-      ],
+      default: () => [],
     },
-     dragNode: {
+    dragNode: {
       type: Object,
       default: () => {},
     },
-     //所有的节点连线
+    //所有的节点连线
     connections: {
       type: Array,
-      default: () => [
-        // {
-        //   source: { id: 1, position: "right" },
-        //   destination: { id: 2, position: "left" },
-        //   id: 1,
-        //   type: "pass",
-        // },
-      ],
+      default: () => [],
     },
     width: {
       type: [String, Number],
@@ -84,8 +72,8 @@ export default {
   },
   data() {
     return {
-      internalNodes: [],//所有的元素集合
-      internalConnections: [],//所有的连线集合
+      internalNodes: [], //所有的元素集合
+      internalConnections: [], //所有的连线集合
       //连线的信息 （开始的节点）
       connectingInfo: {
         source: null,
@@ -93,8 +81,8 @@ export default {
       },
       //当前选中的位置数据
       selectionInfo: null,
-      currentNodes: [],//当前选中的元素
-      currentConnections: [],//当前选中的连线
+      currentNodes: [], //当前选中的元素
+      currentConnections: [], //当前选中的连线
       /**
        * Mouse position(relative to chart div)
        */
@@ -102,7 +90,7 @@ export default {
       cursorToChartOffset: { x: 0, y: 0 },
       //双击修改的flag
       clickedOnce: false,
-       //双击修改的flag
+      //双击修改的flag
       pathClickedOnce: false,
       /**
        * lines of all internalConnections
@@ -111,14 +99,22 @@ export default {
     };
   },
   methods: {
-    allowDrag(ev){
-      ev.preventDefault()
+    allowDrag(ev) {
+      ev.preventDefault();
     },
-    drop(ev){
-       ev.preventDefault()
-       this.$set(this.dragNode,"x",ev.clientX-document.getElementById("chart").offsetLeft)
-       this.$set(this.dragNode,"y",ev.clientY-document.getElementById("chart").offsetTop)
-       this.add(this.dragNode)
+    drop(ev) {
+      ev.preventDefault();
+      this.$set(
+        this.dragNode,
+        "x",
+        ev.clientX - document.getElementById("chart").offsetLeft
+      );
+      this.$set(
+        this.dragNode,
+        "y",
+        ev.clientY - document.getElementById("chart").offsetTop
+      );
+      this.add(this.dragNode);
     },
     //添加元素
     add(node) {
@@ -126,10 +122,10 @@ export default {
         return;
       }
       this.internalNodes.push(node);
+      this.nodes.push(node);
     },
 
     editCurrent() {
-
       if (this.currentNodes.length === 1) {
         this.editNode(this.currentNodes[0]);
       } else if (this.currentConnections.length === 1) {
@@ -205,9 +201,19 @@ export default {
       this.cursorToChartOffset.y = Math.trunc(actualY);
 
       if (this.connectingInfo.source) {
+        console.log(this.connectingInfo.source);
+        console.log(this.connectingInfo.sourcePosition);
         await this.renderConnections();
+        if(this.connectingInfo.sourcePosition=="right"){
+           //显示所有的可连接的点
+        d3.selectAll("#svg .leftconnector").classed("active", true);
+
+        }else{
+           d3.selectAll("#svg .rightconnector").classed("active", true);
+
+        }
         //显示所有的可连接的点
-        d3.selectAll("#svg .connector").classed("active", true);
+        //d3.selectAll("#svg .connector").classed("active", true);
 
         let sourceOffset = this.getNodeConnectorOffset(
           this.connectingInfo.source.id,
@@ -231,7 +237,7 @@ export default {
       if (this.readonly) {
         return;
       }
-     // this.$emit("dblclick", { x: event.offsetX, y: event.offsetY });
+      // this.$emit("dblclick", { x: event.offsetX, y: event.offsetY });
     },
     //选中一个区域，selectionInfo
     handleChartMouseDown(event) {
@@ -245,10 +251,14 @@ export default {
       const halfWidth = node.width / 2;
       const halfHeight = node.height / 2;
       //let top = { x: node.x + halfWidth, y: node.y };
-      let left = { x: node.x, y: node.y + halfHeight };
-     // let bottom = { x: node.x + halfWidth, y: node.y + node.height };
-      let right = { x: node.x + node.width, y: node.y + halfHeight };
-      return { left, right};// top, bottom 
+      let left = { x: node.x, y: node.y + halfHeight, type: "left" };
+      // let bottom = { x: node.x + halfWidth, y: node.y + node.height };
+      let right = {
+        x: node.x + node.width,
+        y: node.y + halfHeight,
+        type: "right",
+      };
+      return { left, right }; // top, bottom
     },
     //渲染选中的元素
     renderSelection() {
@@ -268,7 +278,7 @@ export default {
           .attr("y", edge.start.y)
           .attr("width", edge.end.x - edge.start.x)
           .attr("height", edge.end.y - edge.start.y);
-         //选中的区域是否包含某个元素
+        //选中的区域是否包含某个元素
         that.internalNodes.forEach((item) => {
           let points = [
             { x: item.x, y: item.y },
@@ -283,7 +293,7 @@ export default {
             that.currentNodes.push(item);
           }
         });
-         //选中的区域是否包含某个连线
+        //选中的区域是否包含某个连线
         that.lines.forEach((line) => {
           let points = [
             { x: line.sourceX, y: line.sourceY },
@@ -385,7 +395,6 @@ export default {
     },
     //渲染node
     renderNodes() {
-
       let that = this;
       return new Promise(function (resolve) {
         d3.selectAll("#svg > g.node").remove();
@@ -445,7 +454,6 @@ export default {
       );
     },
     renderNode(node, isSelected) {
-
       let that = this;
       let g = that.append("g").attr("cursor", "move").classed("node", true);
 
@@ -568,12 +576,20 @@ export default {
       let connectorPosition = this.getConnectorPosition(node);
       for (let position in connectorPosition) {
         let positionElement = connectorPosition[position];
+        let className;
+        if (positionElement.type == "left") {
+          className = "connector leftconnector";
+        } else {
+          className = "connector rightconnector";
+        }
         let connector = g
           .append("circle")
           .attr("cx", positionElement.x)
           .attr("cy", positionElement.y)
           .attr("r", 4)
-          .attr("class", "connector");
+          .attr("class", className);
+        //.attr("class", "connector112");
+
         connector
           .on("mousedown", function () {
             d3.event.stopPropagation();
@@ -617,7 +633,9 @@ export default {
         connectors.push(connector);
       }
       g.on("mouseover", function () {
-        connectors.forEach((conn) => conn.classed("active", true));
+        connectors.forEach((conn) => {
+          conn.classed("active", true);
+        });
       }).on("mouseout", function () {
         connectors.forEach((conn) => conn.classed("active", false));
       });
@@ -643,7 +661,6 @@ export default {
     },
     //删除元素
     async remove() {
- 
       if (this.readonly) {
         return;
       }
@@ -694,6 +711,7 @@ export default {
       }
     },
     init() {
+      console.log(this.nodes);
       let that = this;
       that.internalNodes.splice(0, that.internalNodes.length);
       that.internalConnections.splice(0, that.internalConnections.length);
@@ -709,7 +727,6 @@ export default {
     },
   },
   mounted() {
-
     let that = this;
     that.init();
     document.onkeydown = function (event) {
@@ -767,6 +784,7 @@ export default {
       }
       return null;
     },
+    //判断是否进入了要连接的圆圈范围
     hoveredConnection() {
       for (const line of this.lines) {
         let distance = distanceOfPointToLine(

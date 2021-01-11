@@ -629,7 +629,8 @@ function arrowTo(g, x1, y1, x2, y2, lineWidth, strokeStyle) {
       append('path').
       attr('d', 'M2,2 L10,6 L2,10 L6,6 L2,2').
       attr('fill', strokeStyle);
-  path.attr('marker-end', 'url(#' + id + ')');
+      //显示箭头
+ // path.attr('marker-end', 'url(#' + id + ')');
   return path;
 }
 
