@@ -12,7 +12,7 @@ const mixinCommom = {
           } else if (value == "switch") {
             return "判断节点";
           } else if (value == "operation") {
-            return "动过节点";
+            return "动作节点";
           } else if (value == "http") {
             return "http节点";
           }
@@ -20,7 +20,6 @@ const mixinCommom = {
       },
   
     methods: {
- 
     }
   }
   

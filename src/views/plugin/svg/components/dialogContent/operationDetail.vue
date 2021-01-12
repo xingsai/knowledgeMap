@@ -3,12 +3,12 @@
     <el-form
       :model="nodeForm"
       status-icon
-       :rules="rules"
+      :rules="rules"
       ref="nodeForm"
       label-width="100px"
       class="demo-nodeForm"
     >
-     <!-- <el-form-item label="节点名称:" prop="name">
+      <el-form-item label="节点名称:" prop="name">
         <el-input v-model="nodeForm.name"></el-input>
       </el-form-item>
       <el-form-item label="节点类型:" prop="type">
@@ -17,22 +17,26 @@
         </div>
       </el-form-item>
       <el-form-item label="节点描述:" prop="description">
-        <el-input type="textarea" v-model="nodeForm.description" :rows="2" class="resizeNone"></el-input>
-      </el-form-item> -->
+        <el-input
+          type="textarea"
+          v-model="nodeForm.description"
+          :rows="2"
+          class="resizeNone"
+        ></el-input>
+      </el-form-item>
       <div class="">
         <div class="title-wrap">执行动作</div>
       </div>
       <div class="flex-wrap">
-        <el-form-item label="动作类型:" >
+        <el-form-item label="动作类型:">
           <el-checkbox-group
             v-model="isChecked"
             @change="handleCheckedCitiesChange"
           >
             <el-checkbox label="REQUEST_INPUT">回复话术</el-checkbox>
           </el-checkbox-group>
-          <!-- <el-checkbox v-model=" ? checked : disChecked">回复话术</el-checkbox> -->
         </el-form-item>
-        <el-form-item label="" >
+        <el-form-item label="">
           <el-input
             type="textarea"
             v-model="nodeForm.other_info.reply"
@@ -63,7 +67,7 @@
       </el-form-item>
 
       <div class="">
-        <div class="title-wrap">判别条件</div>
+        <div class="title-wrap">变量赋值</div>
       </div>
       <el-form-item
         v-for="(item, index) in nodeForm.other_info.variables"
@@ -72,7 +76,7 @@
       >
         <div class="flex-wrap">
           <el-form-item
-           class="margin-right10"
+            class="margin-right10"
             :prop="'other_info.variables.' + index + '.name'"
             :rules="{
               required: true,
@@ -100,7 +104,7 @@
               trigger: ['blur', 'change'],
             }"
           >
-            <el-select v-model="item.operator" placeholder="请选择">
+            <el-select v-model="item.operator" placeholder="请选择"  @change="operatorChange($event,item)">
               <el-option
                 v-for="item2 in operatorOptions"
                 :key="item2.value"
@@ -114,25 +118,30 @@
             class="margin-right10"
             :prop="'other_info.variables.' + index + '.value'"
             :rules="{
-              required: true,
+              required: item.operator !== 'null',
               message: '判断值不能为空',
               trigger: ['blur', 'change'],
             }"
           >
-            <el-select v-model="item.value" placeholder="请选择">
-              <el-option
-                v-for="item1 in valueOptions"
-                :key="item1.value"
-                :label="item1.label"
-                :value="item1.value"
-              >
-              </el-option>
-            </el-select>
+            <div v-if="item.operator == 'Entity'">
+              <el-select v-model="item.value" placeholder="请选择">
+                <el-option
+                  v-for="item1 in valueOptions"
+                  :key="item1.value"
+                  :label="item1.label"
+                  :value="item1.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+            <div v-else>
+              <el-input
+                v-model="item.value"
+                :disabled="item.operator == 'null'"
+              ></el-input>
+            </div>
           </el-form-item>
-          <div
-            class="del-btn-conditions"
-            @click="delConditionsListOne(index)"
-          >
+          <div class="del-btn-conditions" @click="delConditionsListOne(index)">
             删除
           </div>
         </div>
@@ -147,10 +156,6 @@ import mixinCommom from "./js/mix";
 export default {
   mixins: [mixinCommom],
   props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
     node: {
       type: Object,
       default: null,
@@ -159,7 +164,6 @@ export default {
   data: function () {
     return {
       isChecked: false,
-      radio: "",
       conditionsList: [],
       nodeForm: {},
       rules: {
@@ -167,34 +171,70 @@ export default {
           { required: true, message: "节点名称不能为空", trigger: "blur" },
         ],
       },
-      edittitle: "",
       valueOptions: [
+//         @sys_phone
+// @sys_number
+// @sys_person
+// @sys_idcard
+
         {
-          value: "测试1",
-          label: "测试1",
+          value: "@sys_phone",
+          label: "手机号码实体",
+          id:'111'
         },
         {
-          value: "测试2",
-          label: "测试2",
+          value: "@sys_number",
+          label: "数字实体",
+          id:'112'
+        },
+         {
+          value: "@sys_person",
+          label: "人名实体",
+          id:'113'
+        },
+         {
+          value: "@sys_idcard",
+          label: "身份证号实体",
+          id:'114'
         },
       ],
 
-
-     
-      nameOptions:[
-         {
-          value: "测试1",
-          label: "测试1",
+      nameOptions: [
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e01",
+          label: "userquery",
         },
-         {
-          value: "测试2",
-          label: "测试2",
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e02",
+          label: "phoneID",
         },
-        
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e03",
+          label: "ID",
+        },
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e04",
+          label: "madeID",
+        },
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e05",
+          label: "phone",
+        },
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e06",
+          label: "identityQuery",
+        },
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e07",
+          label: "name",
+        },
+        {
+          value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e08",
+          label: "consID",
+        },
       ],
       operatorOptions: [
-       
-         {
+        {
           value: "String",
           label: "=字符串",
         },
@@ -214,15 +254,17 @@ export default {
           value: "Expression",
           label: "=表达式",
         },
-        
       ],
     };
   },
-  mounted() {
-    console.log(this.visible);
-  },
+  mounted() {},
 
   methods: {
+   operatorChange(e,data){
+      if(e=="null"){
+        this.$set(data,"value","")
+      }
+    },
     handleCheckedCitiesChange(val) {
       if (val) {
         this.isChecked = true;
@@ -253,7 +295,6 @@ export default {
     //提交
     submitForm() {
       this.$refs.nodeForm.validate((valid) => {
-        console.log("校验" + valid);
         if (valid) {
           this.$emit("sendFormInfo", this.nodeForm);
         } else {
@@ -304,6 +345,7 @@ export default {
 }
 .add-btn {
   color: @blue;
+  width: 150px;
 }
 .del-btn {
   color: @blue;

@@ -224,164 +224,178 @@ export default {
     };
   },
   async mounted() {
-    this.nodes = sessionStorage.getItem("nodes")
-      ? JSON.parse(sessionStorage.getItem("nodes"))
-      : [
-          {
-            id: "ues6y",
-            processId: "",
-            name: "查天气111",
-            description: "1111111",
-            type: "root",
-            x: 82,
-            y: 233,
-            wires: ["xj89u"],
-            scene_name: "",
-            view_name: "",
-            other_info: {
-              chineseName: "",
-              intent: "查天气",
-              entitiesForExtend: [],
-            },
-          },
-          {
-            id: "xj89u",
-            processId: "",
-            name: "输入城市名称",
-            description: "11111",
-            type: "operation",
-            x: 228,
-            y: 168,
-            wires: ["c4usb"],
-            scene_name: "",
-            view_name: "",
-            other_info: {
-              chineseName: "",
-              actionType: "",
-              reply: "请输入1城市",
-              entityName: "城市",
-              variables: [
-                {
-                  id: "",
-                  name: "测试1",
-                  value: "测试1",
-                  operator: "String",
-                },
-                {
-                  id: "",
-                  name: "测试2",
-                  value: "测试2",
-                  operator: "Expression",
-                },
-              ],
-            },
-          },
-          {
-            id: "c4usb",
-            processId: "",
-            name: "判断城市名称",
-            description: "判断是否是天津",
-            type: "switch",
-            x: 372,
-            y: 234,
-            wires: ["6cyug"],
-            scene_name: "",
-            view_name: "",
-            other_info: {
-              chineseName: "",
-              cases: [
-                {
-                  type: "normal",
-                  rules: [
-                    {
-                      targetType: "entity",
-                      entityName: "city",
-                      httpResponseProperty: "",
-                      customizedKey: "",
-                      operator: "isNull",
-                      value: "tianjin",
-                    },
-                    {
-                      targetType: "entity",
-                      entityName: "城市",
-                      httpResponseProperty: "",
-                      customizedKey: "",
-                      operator: "equal",
-                      value: "天津",
-                    },
-                  ],
-                  relation: "and",
-                },
-                {
-                  type: "expression",
-                  rules: [
-                    {
-                      targetType: "entity",
-                      entityName: "city",
-                      httpResponseProperty: "",
-                      customizedKey: "",
-                      operator: "isNull",
-                      value: "tianjin",
-                    },
-                    {
-                      targetType: "entity",
-                      entityName: "城市",
-                      httpResponseProperty: "",
-                      customizedKey: "",
-                      operator: "equal",
-                      value: "天津",
-                    },
-                  ],
-                  relation: "and",
-                },
-                {
-                  type: "normal",
-                  rules: [
-                    {
-                      operator: "else",
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-          {
-            id: "ozep5",
-            processId: "",
-            name: "天津气温",
-            description: "",
-            type: "operation",
-            x: 638,
-            y: 193,
-            wires: ["6cyug"],
-            scene_name: "",
-            view_name: "",
-            other_info: {
-              chineseName: "",
-              actionType: "END_SESSION",
-              reply: "天津气温10度",
-              variables: [],
-            },
-          },
-          {
-            id: "6cyug",
-            processId: "",
-            name: "查询地点天气",
-            description: "查询城市天气",
-            type: "http",
-            x: 489,
-            y: 138,
-            wires: ["ozep5"],
-            scene_name: "",
-            view_name: "",
-            other_info: {
-              action: "",
-            },
-          },
-        ];
-    this.setInfoToCanuse();
+
+    console.log(this.$api);
+    // this.nodes = sessionStorage.getItem("nodes")
+    //   ? JSON.parse(sessionStorage.getItem("nodes"))
+    //   : [
+    //       {
+    //         id: "ues6y",
+    //         processId: "",
+    //         name: "查天气111",
+    //         description: "1111111",
+    //         type: "root",
+    //         x: 82,
+    //         y: 233,
+    //         wires: ["xj89u"],
+    //         scene_name: "",
+    //         view_name: "",
+    //         other_info: {
+    //           chineseName: "",
+    //           intent: "查天气",
+    //           entitiesForExtend: [],
+    //         },
+    //       },
+    //       {
+    //         id: "xj89u",
+    //         processId: "",
+    //         name: "输入城市名称",
+    //         description: "11111",
+    //         type: "operation",
+    //         x: 228,
+    //         y: 168,
+    //         wires: ["c4usb"],
+    //         scene_name: "",
+    //         view_name: "",
+    //         other_info: {
+    //           chineseName: "",
+    //           actionType: "",
+    //           reply: "请输入1城市",
+    //           entityName: "城市",
+    //           variables: [
+    //             {
+    //               id: "",
+    //               name: "测试1",
+    //               value: "测试1",
+    //               operator: "String",
+    //             },
+    //             {
+    //               id: "",
+    //               name: "测试2",
+    //               value: "测试2",
+    //               operator: "Expression",
+    //             },
+    //           ],
+    //         },
+    //       },
+    //       {
+    //         id: "c4usb",
+    //         processId: "",
+    //         name: "判断城市名称",
+    //         description: "判断是否是天津",
+    //         type: "switch",
+    //         x: 372,
+    //         y: 234,
+    //         wires: ["6cyug"],
+    //         scene_name: "",
+    //         view_name: "",
+    //         other_info: {
+    //           chineseName: "",
+    //           cases: [
+    //             {
+    //               type: "normal",
+    //               rules: [
+    //                 {
+    //                   targetType: "entity",
+    //                   entityName: "city",
+    //                   httpResponseProperty: "",
+    //                   customizedKey: "",
+    //                   operator: "isNull",
+    //                   value: "tianjin",
+    //                 },
+    //                 {
+    //                   targetType: "entity",
+    //                   entityName: "城市",
+    //                   httpResponseProperty: "",
+    //                   customizedKey: "",
+    //                   operator: "equal",
+    //                   value: "天津",
+    //                 },
+    //               ],
+    //               relation: "and",
+    //             },
+    //             {
+    //               type: "expression",
+    //               rules: [
+    //                 {
+    //                   targetType: "entity",
+    //                   entityName: "city",
+    //                   httpResponseProperty: "",
+    //                   customizedKey: "",
+    //                   operator: "isNull",
+    //                   value: "tianjin",
+    //                 },
+    //                 {
+    //                   targetType: "entity",
+    //                   entityName: "城市",
+    //                   httpResponseProperty: "",
+    //                   customizedKey: "",
+    //                   operator: "equal",
+    //                   value: "天津",
+    //                 },
+    //               ],
+    //               relation: "and",
+    //             },
+    //             {
+    //               type: "normal",
+    //               rules: [
+    //                 {
+    //                   operator: "else",
+    //                 },
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //       },
+    //       {
+    //         id: "ozep5",
+    //         processId: "",
+    //         name: "天津气温",
+    //         description: "",
+    //         type: "operation",
+    //         x: 638,
+    //         y: 193,
+    //         wires: ["6cyug"],
+    //         scene_name: "",
+    //         view_name: "",
+    //         other_info: {
+    //           chineseName: "",
+    //           actionType: "END_SESSION",
+    //           reply: "天津气温10度",
+    //           variables: [],
+    //         },
+    //       },
+    //       {
+    //         id: "6cyug",
+    //         processId: "",
+    //         name: "查询地点天气",
+    //         description: "查询城市天气",
+    //         type: "http",
+    //         x: 489,
+    //         y: 138,
+    //         wires: ["ozep5"],
+    //         scene_name: "",
+    //         view_name: "",
+    //         other_info: {
+    //           action: "",
+    //         },
+    //       },
+    //     ];
+    // this.setInfoToCanuse();
+    this.getagentInfo()
   },
   methods: {
+    getagentInfo(){
+            this.$apiGet(
+        this.$api.getAgentInfo+'?agentId=MOCK-AGENT-ID',
+       
+        )
+        .then(({ data }) => {
+           this.nodes =data.data.dialogNodes
+            this.setInfoToCanuse();
+        });
+
+    },
     setInfoToCanuse() {
       this.connections = [];
       this.nodes.forEach((item) => {
@@ -398,7 +412,6 @@ export default {
             });
           });
         }
-        console.log(this.connections);
       });
     },
     setTitle() {
@@ -541,7 +554,6 @@ export default {
       //       type: "switch",
       //       approvers: [],
       //     });
-
       //     break;
       //   case "3":
       //     this.$refs.chart.add({
@@ -562,9 +574,7 @@ export default {
       //       type: "http",
       //       approvers: [],
       //     });
-
       //     break;
-
       //   default:
       //     console.log("您的输入有误");
       //     break;
@@ -580,28 +590,67 @@ export default {
         approvers: [],
       });
     },
+     
     async handleChartSave(nodes, connections) {
-      nodes.forEach((item)=>{
-        item.wires=[];
-      })
+      nodes.forEach((item) => {
+        item.wires = [];
+      });
       if (connections && connections.length > 0) {
         connections.forEach((item) => {
           if (item.source.position == "right") {
             let index = nodes.findIndex((it) => {
               return it.id == item.source.id;
             });
-            nodes[index].wires.push(item.destination.id)
+            nodes[index].wires.push(item.destination.id);
           } else {
-             let index = nodes.findIndex((it) => {
+            let index = nodes.findIndex((it) => {
               return it.id == item.destination.id;
             });
-            nodes[index].wires.push(item.source.id)
+            nodes[index].wires.push(item.source.id);
           }
         });
       }
-      sessionStorage.setItem("nodes", JSON.stringify(nodes));
+       nodes.forEach((item) => {
+        this.$util.unique(item.wires)
+      });
+      //sessionStorage.setItem("nodes", JSON.stringify(nodes));
       console.log(nodes);
       console.log(connections);
+      this.$apiPost(
+        this.$api.getAgentInfo,
+        {
+              agent: {
+                created_user_id: "2908174897", //创建人id
+                description: "电费电量查询", //agent描述
+                language: "zh-CN",
+                industry: "4709e482-dda6-4011-8329-d875e6edd902", //行业类别
+                type: 1, //类型
+                delete: 0, //删除状态
+                scene: "",
+                public: 0,
+                id: "1b2340b9-2dbe-4df4-ae22-bc93a5601b56",
+                timestamp: 1562208854000,
+                last_edit_username: "测试", //修改人
+                match_threshold: 0.2,
+                created: 1562208600000, //创建时间
+                last_edit_id: "2908174897", //修改人id
+                client_access_token: "64db12d8-02c4-45f4-b948-a0dda8dd6a65", //Client Token
+                created_username: "测试", //创建人
+                user_id: "2908174897", //登陆人
+                match_mode: 0,
+                name: "智能客服内网测通版agent(20190620)_agent", //agent名称
+                online: 1,
+                config: "",
+                updated: 1562208854000, //修改时间
+                developer_access_token: "ff40b19c-d10e-4c34-b47a", //Developer Token
+                intent_model_version: "20170329092259",
+                status: 0,
+              },
+              agentID: "MOCK-AGENT-ID",
+              dialogNodes: nodes,
+          },
+        )
+        .then(({ data }) => {});
       // axios.post(url, {nodes, connection}).then(resp => {
       //   this.nodes = resp.nodes;
       //   this.connections = resp.connections;
@@ -614,13 +663,9 @@ export default {
         let index = this.nodes.findIndex((item) => {
           return item.id == data.id;
         });
-
-        console.log(index);
-        console.log(data);
         this.nodes[index] = Object.assign({}, data);
         this.setInfoToCanuse();
         sessionStorage.setItem("nodes", JSON.stringify(this.nodes));
-
         this.nodeDialogVisible = false;
       }
     },
@@ -631,10 +676,6 @@ export default {
     submitForm() {
       let flag = this.$refs.form.submitForm();
       console.log(flag);
-      // if(flag){
-      //   this.nodeDialogVisible=false
-
-      // }
     },
     //编辑node
     handleEditNode(node) {

@@ -60,10 +60,14 @@ import "./assets/css/common.css";
 // Vue.component("dialogCover", dialogCover);
 
 // http service
-import { $http, author, unauth } from "@/service";
+import { $http, author, unauth, apiPost,apiGet} from "@/service";
 Vue.prototype.$http = $http
 Vue.prototype.$http.author = author;
 Vue.prototype.$http.unauth = unauth;
+Vue.prototype.$apiPost = apiPost;
+Vue.prototype.$apiGet = apiGet;
+import webApi from './service/webApi'
+Vue.prototype.$api = webApi
 
 import {lbFormValidate} from "@/components/lbziyongFile/index.js";
 Vue.prototype.lbFormValidate = lbFormValidate;

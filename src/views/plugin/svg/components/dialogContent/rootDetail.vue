@@ -60,12 +60,8 @@ export default {
       },
       options: [
         {
-          value: "查天气",
-          label: "查天气",
-        },
-        {
-          value: "查电费",
-          label: "查电费",
+          value: "户号查询",
+          label: "户号查询",
         },
       ],
     };

@@ -711,7 +711,6 @@ export default {
       }
     },
     init() {
-      console.log(this.nodes);
       let that = this;
       that.internalNodes.splice(0, that.internalNodes.length);
       that.internalConnections.splice(0, that.internalConnections.length);

@@ -261,6 +261,7 @@ const unauth = axios.create({
 
 unauth.interceptors.request.use(
   (config) => {
+    console.log(config)
     NProgress.start()
     return config
   },
@@ -279,6 +280,13 @@ unauth.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+const apiPost= (url,params) => {
+  
+  return unauth.post(url, params)
+}
 
+const apiGet=  (urls) => {
+  return unauth.get(urls)
+}
 
-export { $http, author, unauth, baseURL }
+export { $http, author, unauth, baseURL,apiPost,apiGet }

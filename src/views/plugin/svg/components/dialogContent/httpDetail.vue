@@ -8,7 +8,7 @@
       label-width="120px"
       class="demo-nodeForm"
     >
-      <!-- <el-form-item label="节点名称:" prop="name">
+      <el-form-item label="节点名称:" prop="name">
         <el-input v-model="nodeForm.name"></el-input>
       </el-form-item>
       <el-form-item label="节点类型:" prop="type">
@@ -23,7 +23,7 @@
           :rows="2"
           class="resizeNone"
         ></el-input>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="方法名称:" prop="other_info.action">
         <el-select
           v-model="nodeForm.other_info.action"
@@ -67,12 +67,16 @@ export default {
       },
      options: [
         {
-          value: "1",
-          label: "方法1",
+          value: "dc2fd7b7-669b-4ea2-aaea-83ac34c4b001 ",
+          label: "consMatch",//户号信息判断
         },
         {
-          value: "2",
-          label: "方法2",
+          value: "dc2fd7b7-669b-4ea2-aaea-83ac34c4b002 ",
+          label: "phoneMatch",//手机号研判
+        },
+        {
+          value: "dc2fd7b7-669b-4ea2-aaea-83ac34c4b003 ",
+          label: "personMatch",//客户信息判断
         },
       ],
     };

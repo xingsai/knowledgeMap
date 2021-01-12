@@ -107,6 +107,20 @@ util.returnData = function (data) {
     }
     return data
 }
+util.unique=function(arr) {
+  for (var i = 0, len = arr.length; i < len; i++) {
+      for (var j = i + 1, len = arr.length; j < len; j++) {
+          if (arr[i] === arr[j]) {
+              arr.splice(j, 1);
+              j--;        // 每删除一个数j的值就减1
+              len--;      // j值减小时len也要相应减1（减少循环次数，节省性能）   
+              // console.log(j,len)
+
+          }
+      }
+  }
+  return arr;
+}
 
 // date relate
 export const prevDate = function(date, amount = 1) {
