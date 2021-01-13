@@ -119,6 +119,8 @@ Vue.filter("dash", function (v) {
 Vue.filter("timeFormat", function (v) {
   return v ? new Date(v).Format('yyyy-MM-dd') : "";
 });
+import directive from "@/libs/director/directive.js"
+Vue.use(directive)
 
 
 /* eslint-disable no-new */

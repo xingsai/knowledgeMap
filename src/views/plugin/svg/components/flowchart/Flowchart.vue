@@ -15,9 +15,9 @@
     @dragover="allowDrag($event)"
     @drop="drop($event)"
   >
-    <span id="position" class="unselectable">
+    <!-- <span id="position" class="unselectable">
       {{ cursorToChartOffset.x + ", " + cursorToChartOffset.y }}
-    </span>
+    </span> -->
     <svg id="svg">
       <rect class="selection" height="0" width="0"></rect>
     </svg>
@@ -39,7 +39,7 @@ export default {
   name: "flowchart",
   props: {
     //所有的node 节点
-    nodes: {
+    internalNodes: {
       type: Array,
       default: () => [],
     },
@@ -48,7 +48,7 @@ export default {
       default: () => {},
     },
     //所有的节点连线
-    connections: {
+    internalConnections: {
       type: Array,
       default: () => [],
     },
@@ -72,8 +72,8 @@ export default {
   },
   data() {
     return {
-      internalNodes: [], //所有的元素集合
-      internalConnections: [], //所有的连线集合
+     // internalNodes: [], //所有的元素集合
+     // internalConnections: [], //所有的连线集合
       //连线的信息 （开始的节点）
       connectingInfo: {
         source: null,
@@ -95,6 +95,7 @@ export default {
       /**
        * lines of all internalConnections
        */
+      //所有连线的折线坐标集合
       lines: [],
     };
   },
@@ -122,7 +123,7 @@ export default {
         return;
       }
       this.internalNodes.push(node);
-      this.nodes.push(node);
+      //this.nodes.push(node);
     },
 
     editCurrent() {
@@ -162,7 +163,8 @@ export default {
     },
     //鼠标抬起   画线连接两个节点
     async handleChartMouseUp() {
-      if (this.connectingInfo.source) {
+       
+      if (this.connectingInfo.source) {      
         if (this.hoveredConnector) {
           //画连接线
           if (this.connectingInfo.source.id !== this.hoveredConnector.node.id) {
@@ -183,6 +185,7 @@ export default {
             };
             this.internalConnections.push(conn);
           }
+
         }
         this.connectingInfo.source = null;
         this.connectingInfo.sourcePosition = null;
@@ -201,8 +204,6 @@ export default {
       this.cursorToChartOffset.y = Math.trunc(actualY);
 
       if (this.connectingInfo.source) {
-        console.log(this.connectingInfo.source);
-        console.log(this.connectingInfo.sourcePosition);
         await this.renderConnections();
         if(this.connectingInfo.sourcePosition=="right"){
            //显示所有的可连接的点
@@ -294,6 +295,8 @@ export default {
           }
         });
         //选中的区域是否包含某个连线
+
+
         that.lines.forEach((line) => {
           let points = [
             { x: line.sourceX, y: line.sourceY },
@@ -596,12 +599,17 @@ export default {
             if (node.type === "end" || that.readonly) {
               return;
             }
+            //当是判断节点的时候，连线数量要小于等于cases的数量
+            if(node.type === "switch"&&node.other_info.cases.length<=node.wires.length ){
+
+            }
             that.connectingInfo.source = node;
             that.connectingInfo.sourcePosition = position;
           })
           .on("mouseup", function () {
             d3.event.stopPropagation();
             if (that.connectingInfo.source) {
+
               if (that.connectingInfo.source.id !== node.id) {
                 // Node can't connect to itself
                 let tempId = +new Date();
@@ -711,19 +719,43 @@ export default {
       }
     },
     init() {
-      let that = this;
-      that.internalNodes.splice(0, that.internalNodes.length);
-      that.internalConnections.splice(0, that.internalConnections.length);
-      that.nodes.forEach((node) => {
+      this.initNodes()
+      this.initConnections()
+     
+      // let that = this;
+      // that.internalNodes.splice(0, that.internalNodes.length);
+      //   console.log( that.internalConnections)
+      // that.internalConnections.splice(0, that.internalConnections.length);
+      //   console.log( that.internalConnections)
+      // that.nodes.forEach((node) => {
+      //   let newNode = Object.assign({}, node);
+      //   newNode.width = newNode.width || 120;
+      //   newNode.height = newNode.height || 60;
+      //   that.internalNodes.push(newNode);
+      // });
+      // that.connections.forEach((connection) => {
+      //   that.internalConnections.push(JSON.parse(JSON.stringify(connection)));
+      // });
+      // console.log( that.internalConnections)
+    },
+    initNodes(){
+       let that = this;
+     // that.internalNodes.splice(0, that.internalNodes.length);
+      that.internalNodes.forEach((node) => {
         let newNode = Object.assign({}, node);
         newNode.width = newNode.width || 120;
         newNode.height = newNode.height || 60;
         that.internalNodes.push(newNode);
       });
-      that.connections.forEach((connection) => {
+    },
+     initConnections(){
+        let that = this;
+     // that.internalConnections.splice(0, that.internalConnections.length);
+      that.internalConnections.forEach((connection) => {
         that.internalConnections.push(JSON.parse(JSON.stringify(connection)));
       });
-    },
+
+    } 
   },
   mounted() {
     let that = this;
@@ -826,6 +858,7 @@ export default {
     },
   },
   watch: {
+    //页面中的所有内部nodes
     internalNodes: {
       immediate: true,
       deep: true,
@@ -834,6 +867,7 @@ export default {
         this.renderConnections();
       },
     },
+     //页面中的所有内部连线
     internalConnections: {
       immediate: true,
       deep: true,
@@ -841,6 +875,7 @@ export default {
         this.renderConnections();
       },
     },
+    //鼠标落下的点的坐标，，坐标信息。发生变化的时候，渲染选中的元素
     selectionInfo: {
       immediate: true,
       deep: true,
@@ -848,6 +883,7 @@ export default {
         this.renderSelection();
       },
     },
+    //选中的node
     currentNodes: {
       immediate: true,
       deep: true,
@@ -855,6 +891,7 @@ export default {
         this.renderNodes();
       },
     },
+    //选中的连线
     currentConnections: {
       immediate: true,
       deep: true,
@@ -862,6 +899,7 @@ export default {
         this.renderConnections();
       },
     },
+    //鼠标移动中的坐标
     cursorToChartOffset: {
       immediate: true,
       deep: true,
@@ -871,6 +909,7 @@ export default {
         }
       },
     },
+    //连线的信息 （开始的节点）
     connectingInfo: {
       immediate: true,
       deep: true,
@@ -878,18 +917,22 @@ export default {
         this.renderConnections();
       },
     },
+    //所有的元素信息
     nodes: {
       immediate: true,
       deep: true,
       handler() {
-        this.init();
+         this.initNodes()
+        //this.init();
       },
     },
+    //所有的连线信息
     connections: {
       immediate: true,
       deep: true,
       handler() {
-        this.init();
+         this.initConnections()
+        //this.init();
       },
     },
   },

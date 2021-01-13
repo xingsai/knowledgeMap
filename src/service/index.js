@@ -213,30 +213,9 @@ author.downloadFile = function(id) {
   let url = baseURL == '' ? 'http://192.168.3.143:8610' : baseURL
   window.open(`${url}/system/fileCtrl/fileDownload?id=${id}`)
 }
-// 文件查看
-/**
- * @param {String} attachAddr 文件id  必传.
- */
-author.lookFile = function(id) {
-  let url = baseURL == '' ? 'http://192.168.3.145:8010' : baseURL
-  window.open(`${url}/system/fileCtrl/filePreview?id=${id}`, '_blank')
-}
-// 用户管理模板下载
-author.downTempLate = function(templateType) {
-  window.open(
-    `${baseURL}/system/fileCtrl/downloadTemplate?templateType=${templateType}`
-  )
-}
-// 招聘管理模板下载
-author.downEvent = function(templateType) {
-  window.open(
-    `${baseURL}/system/fileCtrl/downloadTemplate?templateType=${templateType}`
-  )
-}
 
-author.downTempLateing = function(e) {
-  window.open(`${baseURL}${e}`)
-}
+
+
 author.getCodeSelect = function(codeType) {
   return this.post('/system/codeCtrl/getCodeSelect', {
     codeType,

@@ -79,12 +79,12 @@
       <button @click="$refs.chart.editCurrent()">
        编辑
       </button> -->
-      <button @click="$refs.chart.save()">保存</button>
+      <button @click="$refs.chart.save()" v-forbidclick>保存</button>
     </div>
     <!-- :render="render" -->
     <flowchart
-      :nodes="nodes"
-      :connections="connections"
+      :internalNodes="nodes"
+      :internalConnections="connections"
       @editnode="handleEditNode"
       :width="'100%'"
       :height="'80%'"
@@ -117,7 +117,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleClickCancelSaveNode">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submitForm" v-forbidclick
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
     <connection-dialog
@@ -224,8 +226,6 @@ export default {
     };
   },
   async mounted() {
-
-    console.log(this.$api);
     // this.nodes = sessionStorage.getItem("nodes")
     //   ? JSON.parse(sessionStorage.getItem("nodes"))
     //   : [
@@ -382,20 +382,19 @@ export default {
     //       },
     //     ];
     // this.setInfoToCanuse();
-    this.getagentInfo()
+    this.getagentInfo();
   },
   methods: {
-    getagentInfo(){
-            this.$apiGet(
-        this.$api.getAgentInfo+'?agentId=MOCK-AGENT-ID',
-       
-        )
-        .then(({ data }) => {
-           this.nodes =data.data.dialogNodes
-            this.setInfoToCanuse();
-        });
-
+    //获取agent信息
+    getagentInfo() {
+      this.$apiGet(
+        this.$api.getAgentInfo + "?agentId=1b2340b9-2dbe-4df4-ae22-bc93a5601b60"
+      ).then(({ data }) => {
+        this.nodes = data.data.dialogNodes;
+        this.setInfoToCanuse();
+      });
     },
+    //将获取到的信息转化为可展示用的信息
     setInfoToCanuse() {
       this.connections = [];
       this.nodes.forEach((item) => {
@@ -404,16 +403,20 @@ export default {
         //this.nodes.push(item);
 
         if (item.wires && item.wires.length > 0) {
-          item.wires.forEach((it) => {
-            this.connections.push({
-              source: { id: item.id, position: "right" },
-              destination: { id: it, position: "left" },
-              type: "pass",
-            });
+          item.wires.forEach((it, index) => {
+            if (it) {
+              this.connections.push({
+                source: { id: item.id, position: "right", type: item.type },
+                destination: { id: it, position: "left" },
+                type: "pass",
+                id: item.id + index,
+              });
+            }
           });
         }
       });
     },
+    //设置标题
     setTitle() {
       if (this.nodeForm.type == "root") {
         this.edittitle = "编辑根节点";
@@ -590,7 +593,7 @@ export default {
         approvers: [],
       });
     },
-     
+
     async handleChartSave(nodes, connections) {
       nodes.forEach((item) => {
         item.wires = [];
@@ -610,47 +613,50 @@ export default {
           }
         });
       }
-       nodes.forEach((item) => {
-        this.$util.unique(item.wires)
+      nodes.forEach((item) => {
+        this.$util.unique(item.wires);
       });
       //sessionStorage.setItem("nodes", JSON.stringify(nodes));
       console.log(nodes);
       console.log(connections);
-      this.$apiPost(
-        this.$api.getAgentInfo,
-        {
-              agent: {
-                created_user_id: "2908174897", //创建人id
-                description: "电费电量查询", //agent描述
-                language: "zh-CN",
-                industry: "4709e482-dda6-4011-8329-d875e6edd902", //行业类别
-                type: 1, //类型
-                delete: 0, //删除状态
-                scene: "",
-                public: 0,
-                id: "1b2340b9-2dbe-4df4-ae22-bc93a5601b56",
-                timestamp: 1562208854000,
-                last_edit_username: "测试", //修改人
-                match_threshold: 0.2,
-                created: 1562208600000, //创建时间
-                last_edit_id: "2908174897", //修改人id
-                client_access_token: "64db12d8-02c4-45f4-b948-a0dda8dd6a65", //Client Token
-                created_username: "测试", //创建人
-                user_id: "2908174897", //登陆人
-                match_mode: 0,
-                name: "智能客服内网测通版agent(20190620)_agent", //agent名称
-                online: 1,
-                config: "",
-                updated: 1562208854000, //修改时间
-                developer_access_token: "ff40b19c-d10e-4c34-b47a", //Developer Token
-                intent_model_version: "20170329092259",
-                status: 0,
-              },
-              agentID: "MOCK-AGENT-ID",
-              dialogNodes: nodes,
-          },
-        )
-        .then(({ data }) => {});
+      this.$apiPost(this.$api.getAgentInfo, {
+        agent: {
+          created_user_id: "2908174897", //创建人id
+          description: "电费电量查询", //agent描述
+          language: "zh-CN",
+          industry: "4709e482-dda6-4011-8329-d875e6edd902", //行业类别
+          type: 1, //类型
+          delete: 0, //删除状态
+          scene: "",
+          public: 0,
+          id: "1b2340b9-2dbe-4df4-ae22-bc93a5601b60",
+          timestamp: 1562208854000,
+          last_edit_username: "测试", //修改人
+          match_threshold: 0.2,
+          created: 1562208600000, //创建时间
+          last_edit_id: "2908174897", //修改人id
+          client_access_token: "64db12d8-02c4-45f4-b948-a0dda8dd6a65", //Client Token
+          created_username: "测试", //创建人
+          user_id: "2908174897", //登陆人
+          match_mode: 0,
+          name: "智能客服内网测通版agent(20190620)_agent", //agent名称
+          online: 1,
+          config: "",
+          updated: 1562208854000, //修改时间
+          developer_access_token: "ff40b19c-d10e-4c34-b47a", //Developer Token
+          intent_model_version: "20170329092259",
+          status: 0,
+        },
+        agentID: "MOCK-AGENT-ID",
+        dialogNodes: nodes,
+      }).then(({ data }) => {
+        if (data.code == "200") {
+          this.$message({
+            message: data.msg,
+            type: "success",
+          });
+        }
+      });
       // axios.post(url, {nodes, connection}).then(resp => {
       //   this.nodes = resp.nodes;
       //   this.connections = resp.connections;
@@ -675,11 +681,9 @@ export default {
     },
     submitForm() {
       let flag = this.$refs.form.submitForm();
-      console.log(flag);
     },
     //编辑node
     handleEditNode(node) {
-      console.log(node);
       this.nodeForm = node;
       this.nodeDialogVisible = true;
       this.setTitle();

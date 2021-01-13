@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- <div class="modal" v-if="visible" style="width: 320px">
+        <div class="modal" v-if="visible" style="width: 320px">
             <div class="header">
                 <span>Edit1</span>
             </div>
@@ -20,7 +20,7 @@
                 <button @click="handleClickCancelSaveConnection">Cancel</button>
                 <button @click="handleClickSaveConnection">Ok</button>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 <script>
