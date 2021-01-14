@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {approximatelyEquals} from './math';
 
-function lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle, dash) {
+function lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle, dash,isEnd,casesname) {
   let sta = [x1, y1];
   let end = [x2, y2];
   let lineGenerator = d3.line().x(d => d[0]).y(d => d[1]);
@@ -10,6 +10,15 @@ function lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle, dash) {
       attr('stroke-width', lineWidth).
       attr('fill', 'none').
       attr('d', lineGenerator([sta, end]));
+      if(isEnd){
+        g.append("g").append("text")
+        .attr('x',x1-5)
+        .attr('y', y1-15)
+        .attr("dy", "12px")
+        .attr("text-anchor", "middle")
+        .text(casesname==undefined?'':"case"+(casesname))
+      }
+     
   if (dash) {
     path.style('stroke-dasharray', dash.join(','));
   }
@@ -17,7 +26,7 @@ function lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle, dash) {
 }
 
 function line2(g, x1, y1, x2, y2, startPosition, endPosition, lineWidth,
-    strokeStyle, markered) {
+    strokeStyle, markered,casesname) {
   let points = [];
   let start = [x1, y1];
   let end = [x2, y2];
@@ -599,7 +608,7 @@ function line2(g, x1, y1, x2, y2, startPosition, endPosition, lineWidth,
     let finish = i === points.length - 2;
     if (finish && markered) {
       let path = arrowTo(g, source[0], source[1], destination[0],
-          destination[1], lineWidth, strokeStyle);
+          destination[1], lineWidth, strokeStyle,casesname);
       paths.push(path);
       break;
     } else {
@@ -614,8 +623,8 @@ function line2(g, x1, y1, x2, y2, startPosition, endPosition, lineWidth,
   return {lines, paths};
 }
 
-function arrowTo(g, x1, y1, x2, y2, lineWidth, strokeStyle) {
-  let path = lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle);
+function arrowTo(g, x1, y1, x2, y2, lineWidth, strokeStyle,casesname) {
+  let path = lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle,'',true,casesname);
   const id = 'arrow' + strokeStyle.replace('#', '');
   g.append('marker').
       attr('id', id).

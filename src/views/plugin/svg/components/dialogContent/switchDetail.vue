@@ -27,8 +27,8 @@
       <div class="">
         <span class="title-wrap">判别条件</span>
       </div>
-      <div v-for="(item, index) in nodeForm.conditionsList" :key="index">
-        <div v-if="index + 1 < conditionsList.length">
+      <div v-for="(item, index) in nodeForm.other_info.cases" :key="index">
+        <div v-if="index + 1 < nodeForm.other_info.cases.length">
           <div class="case-wrap">
             case{{ index + 1 }}
             <span class="del-btn" @click="delListOne(index)">删除</span>
@@ -51,7 +51,7 @@
             <div class="flex-wrap" v-if="item.type == 'normal'">
               <el-form-item
                 :prop="
-                  'conditionsList.' + index + '.rules.' + ind + '.cascader'
+                  'other_info.cases.' + index + '.rules.' + ind + '.cascader'
                 "
                 :rules="{
                   required: true,
@@ -71,7 +71,7 @@
               <el-form-item
                 class="margin-right10"
                 :prop="
-                  'conditionsList.' + index + '.rules.' + ind + '.operator'
+                  'other_info.cases.' + index + '.rules.' + ind + '.operator'
                 "
                 :rules="{
                   required: true,
@@ -95,7 +95,7 @@
               </el-form-item>
               <el-form-item
                 class="margin-right10"
-                :prop="'conditionsList.' + index + '.rules.' + ind + '.value'"
+                :prop="'other_info.cases.' + index + '.rules.' + ind + '.value'"
                 :rules="{
                   required:
                     it.operator !== 'isNull' && it.operator !== 'isNotNull',
@@ -133,7 +133,7 @@
             <div v-if="item.type != 'normal'" class="flex-wrap">
               <el-form-item
                 class="margin-right10"
-                :prop="'conditionsList.' + index + '.rules.' + ind + '.value'"
+                :prop="'other_info.cases.' + index + '.rules.' + ind + '.value'"
                 :rules="{
                   required: true,
                   message: '值不能为空',
@@ -178,7 +178,7 @@ export default {
   data: function () {
     return {
       cascader: [],
-      conditionsList: [],
+
       nodeForm: {},
       rules: {
         name: [
@@ -355,22 +355,26 @@ export default {
     },
     handleChange() {},
     delListOne(index) {
-      this.conditionsList.splice(index, 1);
+      this.nodeForm.other_info.cases.splice(index, 1);
     },
     addCase() {
-      this.conditionsList.splice(this.conditionsList.length - 1, 0, {
-        rules: [
-          {
-            targetType: "",
-            entityName: "",
-            httpResponseProperty: "",
-            customizedKey: "",
-            operator: "",
-            value: "",
-          },
-        ],
-        relation: "and", //条件关系（单独一个默认为 and）
-      });
+      this.nodeForm.other_info.cases.splice(
+        this.nodeForm.other_info.cases.length - 1,
+        0,
+        {
+          rules: [
+            {
+              targetType: "",
+              entityName: "",
+              httpResponseProperty: "",
+              customizedKey: "",
+              operator: "",
+              value: "",
+            },
+          ],
+          relation: "and", //条件关系（单独一个默认为 and）
+        }
+      );
     },
     delConditionsListOne(data, index) {
       data.splice(index, 1);
@@ -393,7 +397,7 @@ export default {
     submitForm() {
       this.$refs.nodeForm.validate((valid) => {
         if (valid) {
-          this.nodeForm.conditionsList.forEach((item) => {
+          this.nodeForm.other_info.cases.forEach((item) => {
             if (item.rules && item.rules.length > 0) {
               if (item.type == "normal") {
                 item.rules.forEach((nextItem, nextIndex) => {
@@ -404,12 +408,6 @@ export default {
               }
             }
           });
-
-          this.$set(
-            this.nodeForm.other_info,
-            "cases",
-            this.nodeForm.conditionsList
-          );
           this.$emit("sendFormInfo", this.nodeForm);
         } else {
           console.log("error submit!!");
@@ -428,20 +426,16 @@ export default {
         }
         this.nodeForm = val;
         if (val.other_info.cases && val.other_info.cases.length > 0) {
-          this.conditionsList = val.other_info.cases;
-          this.conditionsList.forEach((item, index) => {
+          val.other_info.cases.forEach((item, index) => {
             if (item.rules && item.rules.length > 0) {
               item.rules.forEach((nextItem, nextIndex) => {
-                console.log(nextItem.targetType);
                 let arr = [nextItem.targetType, nextItem.entityName];
                 this.$set(nextItem, "cascader", arr);
-                //this.$set(this.conditionsList[index].rules[nextIndex], "cascader", (arr));
               });
             }
           });
         } else {
         }
-        this.$set(this.nodeForm, "conditionsList", this.conditionsList);
       },
     },
   },

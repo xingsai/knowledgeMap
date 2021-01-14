@@ -47,38 +47,6 @@
     </div>
 
     <div id="toolbar">
-      <!-- <button
-        @click="
-          $refs.chart.add({
-            id: +new Date(),
-            x: 10,
-            y: 10,
-            name: 'New',
-            type: 'operation',
-            approvers: [],
-          })
-        "
-      >
-       新增(双击canvas)
-      </button>
-            <button
-        @click="
-          $refs.chart.add({
-            id: +new Date(),
-            x: 10,
-            y: 10,
-            name: 'New',
-            type: 'operation',
-            approvers: [],
-          })
-        "
-      >
-       新增(双击canvas)
-      </button>
-      <button @click="$refs.chart.remove()">删除</button>
-      <button @click="$refs.chart.editCurrent()">
-       编辑
-      </button> -->
       <button @click="$refs.chart.save()" v-forbidclick>保存</button>
     </div>
     <!-- :render="render" -->
@@ -96,11 +64,6 @@
       ref="chart"
     >
     </flowchart>
-    <!-- <node-dialog
-      :visible.sync="nodeDialogVisible"
-      :node.sync="nodeForm"
-      @hideDialog="hideDialog"
-    ></node-dialog> -->
     <el-dialog
       :title="edittitle"
       :visible.sync="nodeDialogVisible"
@@ -132,7 +95,6 @@
 </template>
 <script>
 /* eslint-disable no-unused-vars */
-
 import ConnectionDialog from "@/views/plugin/svg/components/ConnectionDialog.vue";
 import NodeDialog from "@/views/plugin/svg/components/NodeDialog.vue";
 import Flowchart from "@/views/plugin/svg/components/flowchart/Flowchart.vue";
@@ -387,11 +349,16 @@ export default {
   methods: {
     //获取agent信息
     getagentInfo() {
+      let id=this.$route.query.agentId;
       this.$apiGet(
-        this.$api.getAgentInfo + "?agentId=1b2340b9-2dbe-4df4-ae22-bc93a5601b60"
+        this.$api.getAgentInfo + "?agentId="+ (id?id:'1b2340b9-2dbe-4df4-ae22-bc93a5601b56')
       ).then(({ data }) => {
-        this.nodes = data.data.dialogNodes;
-        this.setInfoToCanuse();
+        if (data.code == 200) {
+          if (data.data.dialogNodes) {
+            this.nodes = data.data.dialogNodes;
+            this.setInfoToCanuse();
+          }
+        }
       });
     },
     //将获取到的信息转化为可展示用的信息
@@ -406,10 +373,16 @@ export default {
           item.wires.forEach((it, index) => {
             if (it) {
               this.connections.push({
-                source: { id: item.id, position: "right", type: item.type },
+                source: {
+                  id: item.id,
+                  position: "right",
+                  type: item.type,
+                  allInfo: item,
+                },
                 destination: { id: it, position: "left" },
-                type: "pass",
+                type: item.type == "switch" ? "reject" : "pass",
                 id: item.id + index,
+                case: item.type == "switch" ? index : undefined,
               });
             }
           });
@@ -419,13 +392,13 @@ export default {
     //设置标题
     setTitle() {
       if (this.nodeForm.type == "root") {
-        this.edittitle = "编辑根节点";
+        this.edittitle = "编辑根节点" + this.nodeForm.id;
       } else if (this.nodeForm.type == "operation") {
-        this.edittitle = "编辑动作节点";
+        this.edittitle = "编辑动作节点" + this.nodeForm.id;
       } else if (this.nodeForm.type == "switch") {
-        this.edittitle = "编辑判断节点";
+        this.edittitle = "编辑判断节点" + this.nodeForm.id;
       } else if (this.nodeForm.type == "http") {
-        this.edittitle = "编辑http节点";
+        this.edittitle = "编辑http节点" + this.nodeForm.id;
       } else {
         this.edittitle = "编辑";
       }
@@ -440,7 +413,7 @@ export default {
       switch (num) {
         case "1":
           this.dragNode = {
-            id: +new Date(),
+            id: ''+new Date().getTime(),
             x: 10,
             y: 10,
             processId: "",
@@ -459,7 +432,7 @@ export default {
           break;
         case "2":
           this.dragNode = {
-            id: +new Date(),
+            id: ''+new Date().getTime(),
             x: 10,
             y: 10,
             name: "判断节点",
@@ -492,7 +465,7 @@ export default {
           break;
         case "3":
           this.dragNode = {
-            id: +new Date(),
+            id: ''+new Date().getTime(),
             x: 10,
             y: 10,
             name: "动作节点",
@@ -513,7 +486,7 @@ export default {
           break;
         case "4":
           this.dragNode = {
-            id: +new Date(),
+            id:  ''+new Date().getTime(),
             x: 10,
             y: 10,
             name: "http节点",
@@ -584,19 +557,29 @@ export default {
       // }
     },
     handleDblClick(position) {
-      this.$refs.chart.add({
-        id: +new Date(),
-        x: position.x,
-        y: position.y,
-        name: "New",
-        type: "operation",
-        approvers: [],
-      });
+      // this.$refs.chart.add({
+      //   id: +new Date(),
+      //   x: position.x,
+      //   y: position.y,
+      //   name: "New",
+      //   type: "operation",
+      //   approvers: [],
+      // });
     },
 
     async handleChartSave(nodes, connections) {
       nodes.forEach((item) => {
-        item.wires = [];
+        if (item.type == "switch") {
+          let num = item.other_info.cases.length;
+          console.log(num);
+          let arr = [];
+          for (let i = 0; i < num; i++) {
+            arr.push("");
+          }
+          item.wires = arr;
+        } else {
+          item.wires = [];
+        }
       });
       if (connections && connections.length > 0) {
         connections.forEach((item) => {
@@ -604,12 +587,25 @@ export default {
             let index = nodes.findIndex((it) => {
               return it.id == item.source.id;
             });
-            nodes[index].wires.push(item.destination.id);
+            console.log(item.case);
+            if (item.case != undefined) {
+              console.log(1);
+              nodes[index].wires.splice(item.case, 1, item.destination.id);
+            } else {
+              console.log(nodes[index].wires);
+              nodes[index].wires.push(item.destination.id);
+            }
           } else {
             let index = nodes.findIndex((it) => {
               return it.id == item.destination.id;
             });
-            nodes[index].wires.push(item.source.id);
+            if (item.case != undefined) {
+              nodes[index].wires.splice(item.case, 1, item.source.id);
+            } else {
+              nodes[index].wires.push(item.source.id);
+            }
+            //nodes[index].wires.splice(item.case,1,item.destination.id);
+            //nodes[index].wires.push(item.source.id);
           }
         });
       }
@@ -629,7 +625,7 @@ export default {
           delete: 0, //删除状态
           scene: "",
           public: 0,
-          id: "1b2340b9-2dbe-4df4-ae22-bc93a5601b60",
+          id: this.$route.query.agentId?this.$route.query.agentId:'1b2340b9-2dbe-4df4-ae22-bc93a5601b56',
           timestamp: 1562208854000,
           last_edit_username: "测试", //修改人
           match_threshold: 0.2,
@@ -690,9 +686,13 @@ export default {
     },
     //编辑连线
     handleEditConnection(connection) {
-      this.connectionForm.target = connection;
-      this.connectionDialogVisible = true;
+      console.log(connection);
+      if (connection.source.type == "switch") {
+        this.connectionForm.target = connection;
+        this.connectionDialogVisible = true;
+      }
     },
+
     // render: function (g, node, isSelected) {
     //   node.width = node.width || 120;
     //   node.height = node.height || 60;

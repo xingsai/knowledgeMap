@@ -72,8 +72,8 @@ export default {
   },
   data() {
     return {
-     // internalNodes: [], //所有的元素集合
-     // internalConnections: [], //所有的连线集合
+      // internalNodes: [], //所有的元素集合
+      // internalConnections: [], //所有的连线集合
       //连线的信息 （开始的节点）
       connectingInfo: {
         source: null,
@@ -163,29 +163,31 @@ export default {
     },
     //鼠标抬起   画线连接两个节点
     async handleChartMouseUp() {
-       
-      if (this.connectingInfo.source) {      
+      if (this.connectingInfo.source) {
         if (this.hoveredConnector) {
           //画连接线
           if (this.connectingInfo.source.id !== this.hoveredConnector.node.id) {
             // Node can't connect to itself
-            let tempId = +new Date();
+            let tempId = ''+new Date().getTime();
             let conn = {
               source: {
                 id: this.connectingInfo.source.id,
                 position: this.connectingInfo.sourcePosition,
+                type: this.connectingInfo.source.type,
+                allInfo: this.connectingInfo.source,
               },
               destination: {
                 id: this.hoveredConnector.node.id,
                 position: this.hoveredConnector.position,
               },
               id: tempId,
-              type: "pass",
+              type:  this.connectingInfo.source.type=="switch"?"reject": "pass",
               name: "Pass",
             };
+            console.log("鼠标抬起   画线连接两个节点-------")
             this.internalConnections.push(conn);
+            this.restNodes(this.internalNodes, this.internalConnections);
           }
-
         }
         this.connectingInfo.source = null;
         this.connectingInfo.sourcePosition = null;
@@ -205,13 +207,11 @@ export default {
 
       if (this.connectingInfo.source) {
         await this.renderConnections();
-        if(this.connectingInfo.sourcePosition=="right"){
-           //显示所有的可连接的点
-        d3.selectAll("#svg .leftconnector").classed("active", true);
-
-        }else{
-           d3.selectAll("#svg .rightconnector").classed("active", true);
-
+        if (this.connectingInfo.sourcePosition == "right") {
+          //显示所有的可连接的点
+          d3.selectAll("#svg .leftconnector").classed("active", true);
+        } else {
+          d3.selectAll("#svg .rightconnector").classed("active", true);
         }
         //显示所有的可连接的点
         //d3.selectAll("#svg .connector").classed("active", true);
@@ -296,7 +296,6 @@ export default {
         });
         //选中的区域是否包含某个连线
 
-
         that.lines.forEach((line) => {
           let points = [
             { x: line.sourceX, y: line.sourceY },
@@ -350,6 +349,7 @@ export default {
               };
             }
             //画线
+            console.log()
             let result = that.arrowTo(
               sourcePosition.x,
               sourcePosition.y,
@@ -357,7 +357,9 @@ export default {
               destinationPosition.y,
               conn.source.position,
               conn.destination.position,
-              colors[conn.type]
+              colors[conn.type],
+              conn.case===undefined?undefined:conn.case+1
+
             );
             //为连接线绑定双击方法，，双击显示编辑弹窗
             for (const path of result.paths) {
@@ -427,7 +429,7 @@ export default {
       g.classed("guideline", true);
       lineTo(g, x1, y1, x2, y2, 1, "#a3a3a3", [5, 3]);
     },
-    arrowTo(x1, y1, x2, y2, startPosition, endPosition, color) {
+    arrowTo(x1, y1, x2, y2, startPosition, endPosition, color,casesname ) {
       let g = this.append("g");
       g.classed("connection", true);
       line2(
@@ -440,7 +442,8 @@ export default {
         endPosition,
         1,
         color || "#a3a3a3",
-        true
+        true,
+        casesname
       );
       // a 5px cover to make mouse operation conveniently
       return line2(
@@ -453,7 +456,8 @@ export default {
         endPosition,
         5,
         "transparent",
-        false
+        false,
+        casesname
       );
     },
     renderNode(node, isSelected) {
@@ -521,7 +525,7 @@ export default {
                     item.x,
                     item.y + item.height,
                     expectX,
-                    expectY
+                    expectY,
                   );
                 } else {
                   that.guideLineTo(
@@ -600,8 +604,11 @@ export default {
               return;
             }
             //当是判断节点的时候，连线数量要小于等于cases的数量
-            if(node.type === "switch"&&node.other_info.cases.length<=node.wires.length ){
-
+            if (
+              node.type === "switch" &&
+              node.other_info.cases.length <= that.$util.removeEmpty(node.wires).length
+            ) {
+              return;
             }
             that.connectingInfo.source = node;
             that.connectingInfo.sourcePosition = position;
@@ -609,24 +616,27 @@ export default {
           .on("mouseup", function () {
             d3.event.stopPropagation();
             if (that.connectingInfo.source) {
-
               if (that.connectingInfo.source.id !== node.id) {
                 // Node can't connect to itself
-                let tempId = +new Date();
+                let tempId = ''+new Date().getTime();
                 let conn = {
                   source: {
                     id: that.connectingInfo.source.id,
                     position: that.connectingInfo.sourcePosition,
+                    type: that.connectingInfo.source.type,
+                    allInfo: that.connectingInfo.source,
                   },
                   destination: {
                     id: node.id,
                     position: position,
                   },
                   id: tempId,
-                  type: "pass",
+                  type:  that.connectingInfo.source.type=="switch"?"reject": "pass",
                   name: "Pass",
                 };
+                console.log("mouseup------再圆圈中")
                 that.internalConnections.push(conn);
+                that.restNodes(that.internalNodes, that.internalConnections);
               }
               that.connectingInfo.source = null;
               that.connectingInfo.sourcePosition = null;
@@ -646,6 +656,30 @@ export default {
         });
       }).on("mouseout", function () {
         connectors.forEach((conn) => conn.classed("active", false));
+      });
+    },
+    //重组装nodes
+    restNodes(nodes, connections) {
+      nodes.forEach((item) => {
+        item.wires = [];
+      });
+      if (connections && connections.length > 0) {
+        connections.forEach((item) => {
+          if (item.source.position == "right") {
+            let index = nodes.findIndex((it) => {
+              return it.id == item.source.id;
+            });
+            nodes[index].wires.push(item.destination.id);
+          } else {
+            let index = nodes.findIndex((it) => {
+              return it.id == item.destination.id;
+            });
+            nodes[index].wires.push(item.source.id);
+          }
+        });
+      }
+      nodes.forEach((item) => {
+        this.$util.unique(item.wires);
       });
     },
     getCurrentNodesEdge() {
@@ -697,11 +731,13 @@ export default {
         );
       }
       this.internalNodes.splice(this.internalNodes.indexOf(node), 1);
+        this.restNodes(this.internalNodes, this.internalConnections);
     },
     //删除连线
     removeConnection(conn) {
       let index = this.internalConnections.indexOf(conn);
       this.internalConnections.splice(index, 1);
+      this.restNodes(this.internalNodes, this.internalConnections);
     },
     //移动元素
     moveCurrentNode(x, y) {
@@ -719,9 +755,9 @@ export default {
       }
     },
     init() {
-      this.initNodes()
-      this.initConnections()
-     
+      this.initNodes();
+      this.initConnections();
+
       // let that = this;
       // that.internalNodes.splice(0, that.internalNodes.length);
       //   console.log( that.internalConnections)
@@ -738,9 +774,9 @@ export default {
       // });
       // console.log( that.internalConnections)
     },
-    initNodes(){
-       let that = this;
-     // that.internalNodes.splice(0, that.internalNodes.length);
+    initNodes() {
+      let that = this;
+      // that.internalNodes.splice(0, that.internalNodes.length);
       that.internalNodes.forEach((node) => {
         let newNode = Object.assign({}, node);
         newNode.width = newNode.width || 120;
@@ -748,14 +784,13 @@ export default {
         that.internalNodes.push(newNode);
       });
     },
-     initConnections(){
-        let that = this;
-     // that.internalConnections.splice(0, that.internalConnections.length);
+    initConnections() {
+      let that = this;
+      // that.internalConnections.splice(0, that.internalConnections.length);
       that.internalConnections.forEach((connection) => {
         that.internalConnections.push(JSON.parse(JSON.stringify(connection)));
       });
-
-    } 
+    },
   },
   mounted() {
     let that = this;
@@ -867,7 +902,7 @@ export default {
         this.renderConnections();
       },
     },
-     //页面中的所有内部连线
+    //页面中的所有内部连线
     internalConnections: {
       immediate: true,
       deep: true,
@@ -922,7 +957,7 @@ export default {
       immediate: true,
       deep: true,
       handler() {
-         this.initNodes()
+        this.initNodes();
         //this.init();
       },
     },
@@ -931,7 +966,7 @@ export default {
       immediate: true,
       deep: true,
       handler() {
-         this.initConnections()
+        this.initConnections();
         //this.init();
       },
     },
