@@ -67,15 +67,15 @@ export default {
       },
      options: [
         {
-          value: "dc2fd7b7-669b-4ea2-aaea-83ac34c4b001 ",
+          value:"consMatch",// "dc2fd7b7-669b-4ea2-aaea-83ac34c4b001 ",
           label: "consMatch",//户号信息判断
         },
         {
-          value: "dc2fd7b7-669b-4ea2-aaea-83ac34c4b002 ",
+          value: "phoneMatch",//"dc2fd7b7-669b-4ea2-aaea-83ac34c4b002 ",
           label: "phoneMatch",//手机号研判
         },
         {
-          value: "dc2fd7b7-669b-4ea2-aaea-83ac34c4b003 ",
+          value:"personMatch",// "dc2fd7b7-669b-4ea2-aaea-83ac34c4b003 ",
           label: "personMatch",//客户信息判断
         },
       ],

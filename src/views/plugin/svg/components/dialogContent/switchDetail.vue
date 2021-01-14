@@ -202,22 +202,22 @@ export default {
           label: "实体",
           children: [
             {
-              value: "@sys_phone",
+              value: "sys_phone",
               label: "手机号码实体",
               id: "111",
             },
             {
-              value: "@sys_number",
+              value: "sys_number",
               label: "数字实体",
               id: "112",
             },
             {
-              value: "@sys_person",
+              value: "sys_person",
               label: "人名实体",
               id: "113",
             },
             {
-              value: "@sys_idcard",
+              value: "sys_idcard",
               label: "身份证号实体",
               id: "114",
             },
@@ -238,35 +238,35 @@ export default {
           label: "变量",
           children: [
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e01",
+              value: "userquery", //"9b2cd7cc-f4a6-4d36-91fe-eaac375e1e01",
               label: "userquery",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e02",
+              value: "phoneID", //"9b2cd7cc-f4a6-4d36-91fe-eaac375e1e02",
               label: "phoneID",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e03",
+              value: "ID", //"9b2cd7cc-f4a6-4d36-91fe-eaac375e1e03",
               label: "ID",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e04",
+              value: "madeID", // "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e04",
               label: "madeID",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e05",
+              value: "phone", // "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e05",
               label: "phone",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e06",
+              value: "identityQuery", //"9b2cd7cc-f4a6-4d36-91fe-eaac375e1e06",
               label: "identityQuery",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e07",
+              value: "name", //"9b2cd7cc-f4a6-4d36-91fe-eaac375e1e07",
               label: "name",
             },
             {
-              value: "9b2cd7cc-f4a6-4d36-91fe-eaac375e1e08",
+              value: "consID", //"9b2cd7cc-f4a6-4d36-91fe-eaac375e1e08",
               label: "consID",
             },
           ],
@@ -373,6 +373,7 @@ export default {
             },
           ],
           relation: "and", //条件关系（单独一个默认为 and）
+          type: "normal", //
         }
       );
     },

@@ -11,7 +11,7 @@ var $http = axios
 const baseURL =
   process.env.NODE_ENV === 'development'
     ? '/apiV1'
-    : 'http://192.168.0.213:8887'
+    : '/apiV1'
 
 axios.defaults.withCredentials = true
 const author = axios.create({
