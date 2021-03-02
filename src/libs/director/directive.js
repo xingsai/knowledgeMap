@@ -1,4 +1,5 @@
 function directive(Vue) {
+    
     //关闭密码输入框记录密码-下拉框(v-offpassselect)
     Vue.directive('offpassselect', {
         inserted: (el, binding) => {
