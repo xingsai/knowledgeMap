@@ -55,4 +55,6 @@ function directive(Vue) {
     });
 }
 
+
+
 export default directive;
